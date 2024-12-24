@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "D:\\ATHLETIC-PROJECT\\winston\\success\\.57c5e22fccb45a10bc3b5425130c0ab863bab068-audit.json",
+    "files": [
+        {
+            "date": 1735028523555,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\24-12-2024-14-success.log",
+            "hash": "d5c6d9a5741a6a28a66640d4ec9d8b829f32cdea137b8497ac50069faba9ba83"
+        },
+        {
+            "date": 1735030818444,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\24-12-2024-15-success.log",
+            "hash": "0dd8e5e1d02c4dd8ed1af95968d4296d532bfc2e48d6f3eb7c9ed84703d789c4"
+        }
+    ],
+    "hashType": "sha256"
+}

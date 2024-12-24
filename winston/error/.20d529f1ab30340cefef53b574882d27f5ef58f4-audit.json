@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "D:\\ATHLETIC-PROJECT\\winston\\error\\.20d529f1ab30340cefef53b574882d27f5ef58f4-audit.json",
+    "files": [
+        {
+            "date": 1735028523557,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-14-error.log",
+            "hash": "63fc4e75b0300f84f82379f82de2e57172d57fedd8eede23fe41192c69ce8ca0"
+        },
+        {
+            "date": 1735030818446,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-15-error.log",
+            "hash": "6180fcf24148e40cb084fe0f02da0ef1321f82d889cff82c36092d724c311a7d"
+        }
+    ],
+    "hashType": "sha256"
+}
