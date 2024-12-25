@@ -4,12 +4,9 @@ import { ZodError } from "zod";
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { IErrorResponse, IGenericErrorMessage } from "../interface/error";
 import handlerZodError from "../errors/handleZodError";
-import mongoose from "mongoose";
 import handleValidationError from "../errors/handleValidationError";
 import handlerCastError from "../errors/handleCastError";
-
 import AppError from "../errors/AppError";
-
 import { errorLogger } from "../shared/logger";
 
  const globalErrorHandler: ErrorRequestHandler = (

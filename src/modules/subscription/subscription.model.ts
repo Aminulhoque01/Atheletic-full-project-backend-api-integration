@@ -8,14 +8,10 @@ const subscriptionSchema: Schema<ISubscription> = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     tier: {
       type: String,
-      enum: ["basic", "advanced"],
-      required: true,
-    },
-    features: {
-      type: [String],
-      required: true,
+      // required: true,
     },
     price: {
       type: String,
@@ -28,10 +24,10 @@ const subscriptionSchema: Schema<ISubscription> = new mongoose.Schema(
       trim: true,
     },
     feature: {
-      type: String,
+      type: Object,
       default: {
-        subscription_date: "1970-01-01",
-        subscription_end_date: "1970-01-01",
+        subscription_date: "2024-01-01",
+        subscription_end_date: "2024-02-01",
         subscription_status: "inactive",
         subscription_details: "No subscription details available",
       },
@@ -46,6 +42,4 @@ const subscriptionSchema: Schema<ISubscription> = new mongoose.Schema(
   }
 );
 
-export const SubscriptionModel: Model<ISubscription> =
-  mongoose.models.Subscription ||
-  mongoose.model<ISubscription>("Subscription", subscriptionSchema);
+export const SubscriptionModel: Model<ISubscription> =mongoose.models.Subscription || mongoose.model<ISubscription>("Subscription", subscriptionSchema);

@@ -62,7 +62,7 @@ const createCategory = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
     const { image, category_name } = req.body;
 
-    console.log("usr---------",req.user);
+    console.log("usr---------", req.user);
 
     const insertData: any = {};
     if (category_name) insertData.category_name = category_name;
@@ -80,8 +80,6 @@ const createCategory = catchAsync(
     const result = await CategoryService.createCategory(insertData);
     console.log(result);
 
- 
-
     sendResponse<ICategory>(res, {
       success: true,
       statusCode: httpStatus.OK,
@@ -91,53 +89,98 @@ const createCategory = catchAsync(
   }
 );
 
-const updateCategory = catchAsync(async (req: Request, res: Response) => {
-  const { category_name } = req.body;
-  const userId = req.user.id;
-  const categoryId = req.params.id;
+// const updateCategory = catchAsync(async (req: Request, res: Response) => {
 
-  // .....
-    const insertData: any = {};
-    if (category_name) insertData.category_name = category_name;
+//   const categoryId = req.params.id;
+//   const userId = req.user.id;
 
-    if (req.file) {
-      const imagePath = `public\\images\\${req.file.filename}`;
-      const publicFileURL = `/images/${req.file.filename}`;
+//   console.log("Params:", userId);
+//   console.log("Body:", categoryId);
 
-      insertData.image = {
-        path: imagePath,
-        publicFileURL: publicFileURL,
-      };
-    }
-    //......
+//   const result = await UserModel.findByIdAndUpdate(
+//     userId,
+//     { $push: { interests: categoryId } },
+//     { new: true } // Return the updated document
+//   );
+
+//   const user = await UserModel.findById(userId).populate('interests');
+
+//   if (!result) {
+//     throw new Error("Failed to update category!");
+//   }
+
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: "Category updated successfully",
+//     data: result,
+//   });
+// });
+
+// export const updateCategory = async (req: Request, res: Response):Promise<void> => {
+//   try {
+//     const { id } = req.params; // Extract `id` from route parameters
+//     if (!id) {
+//       return res.status(400).json({ message: "Category ID is required." });
+//     }
+
+//     // Log params and body for debugging
+//     console.log("Params:", req.params);
+//     console.log("Body:", req.body);
+
+//     const updatedCategory = await CategoryService.updateCategory(id, req.body);
+
+//     if (!updatedCategory) {
+//       return res.status(404).json({ message: "Category not found." });
+//     }
+
+//     return res
+//       .status(200)
+//       .json({ message: "Category updated successfully.", updatedCategory });
+//   } catch (error) {
+//     console.error("Error updating category:", error);
+//     return res.status(500).json({ message: "Internal server error.", error });
+//   }
+// };
+
+const updateCategory = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const categoryId = req.params?.id; // Use optional chaining
+  const userId = req.user?.id; // Use optional chaining
+
+  // Validate inputs
+  if (!categoryId) {
+    res.status(400).json({ error: "Category ID is required" });
+    return;
+  }
+  if (!userId) {
+    res.status(401).json({ error: "User not authenticated" });
+    return;
+  }
+
+  console.log("Params:", req.params);
+  console.log("User:", req.user);
 
   const result = await UserModel.findByIdAndUpdate(
-    
     userId,
     { $push: { interests: categoryId } },
     { new: true } // Return the updated document
   );
 
-  // console.log('Updated User:', result);
-
-  const user = await UserModel.findById(userId).populate('interests');
-  // console.log(user)
-
   if (!result) {
     throw new Error("Failed to update category!");
   }
+
+  const user = await UserModel.findById(userId).populate("interests");
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Category updated successfully",
-    data: result,
+    data: user, // Include populated user data
   });
 });
 
-
-const getInterest= catchAsync(async(req:Request, res:Response) =>{
-  
+const getInterest = catchAsync(async (req: Request, res: Response) => {
   const result = await CategoryService.getInterest();
 
   sendResponse<ICategory[]>(res, {
@@ -146,28 +189,25 @@ const getInterest= catchAsync(async(req:Request, res:Response) =>{
     message: "get all interest",
     data: Array.isArray(result) ? result : [],
   });
-})
-
+});
 
 const deleteCategory = catchAsync(async (req: Request, res: Response) => {
-
-    const id = req.params.id;
-    const result= await CategoryService.deleteCategory(id);
-    if(!result){
-      throw new Error("Category not found")
-    }
-    sendResponse<ICategory>(res,{
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Category deleted successfully",
-      data: result  
-    });
-
-})
+  const id = req.params.id;
+  const result = await CategoryService.deleteCategory(id);
+  if (!result) {
+    throw new Error("Category not found");
+  }
+  sendResponse<ICategory>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Category deleted successfully",
+    data: result,
+  });
+});
 
 export const CategoryController = {
   createCategory,
   updateCategory,
   getInterest,
-  deleteCategory
+  deleteCategory,
 };

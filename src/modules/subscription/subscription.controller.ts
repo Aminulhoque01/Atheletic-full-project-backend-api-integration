@@ -20,11 +20,11 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
     const { name, price, duration } = req.body;
 
     // Validate if duration and price are numbers
-    if (isNaN(Number(duration))) {
-      return sendError(res, httpStatus.BAD_REQUEST, {
-        message: "Give only a number of how many months you want",
-      });
-    }
+    // if (isNaN(Number(duration))) {
+    //   return sendError(res, httpStatus.BAD_REQUEST, {
+    //     message: "Give only a number of how many months you want",
+    //   });
+    // }
     if (isNaN(Number(price))) {
       return sendError(res, httpStatus.BAD_REQUEST, {
         message: "Give correct price",
@@ -113,13 +113,13 @@ export const updateSubscription = catchAsync(
     const { name, price, duration } = req.body;
 
     // Validate if duration is a number
-    if (duration) {
-      if (isNaN(Number(duration))) {
-        return sendError(res, httpStatus.BAD_REQUEST, {
-          message: "Give only a number of how many months you want",
-        });
-      }
-    }
+    // if (duration) {
+    //   if (isNaN(Number(duration))) {
+    //     return sendError(res, httpStatus.BAD_REQUEST, {
+    //       message: "Give only a number of how many months you want",
+    //     });
+    //   }
+    // }
 
     // Validate if price is a number
     if (price) {
@@ -164,6 +164,7 @@ export const updateSubscription = catchAsync(
 export const deleteSubscription = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.query?.id as string;
+    // const id = req.params.id
 
     // Find subscription by ID
     const subscription = await findSubsById(id);
