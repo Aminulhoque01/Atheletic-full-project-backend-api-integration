@@ -69,9 +69,9 @@ const UserSchema = new Schema<IUser>(
       default: "active", // Default value set to active
     },
     fightRecord: {
-      wins: { type: Number, required: true },
-      losses: { type: Number, required: true },
-      draws: { type: Number, required: true },
+      wins: { type: Number,  },
+      losses: { type: Number,   },
+      draws: { type: Number,   },
     },
     company_Name: {
       type: String,

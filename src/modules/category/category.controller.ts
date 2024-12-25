@@ -62,7 +62,7 @@ const createCategory = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
     const { image, category_name } = req.body;
 
-    console.log("usr---------", req.user);
+    // console.log("usr---------", req.user);
 
     const insertData: any = {};
     if (category_name) insertData.category_name = category_name;

@@ -41,7 +41,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     gym,
     email,
     password,
-    
+
     weight,
     sport,
     dateOfBirth,
@@ -83,7 +83,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       email,
       password,
       role,
-      
+
       weight,
       sport,
       dateOfBirth,
@@ -119,7 +119,6 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       owner_firstName,
       owner_lastName,
       phoneNumber,
-      
     };
 
     // Trim all values and check for missing fields
@@ -127,7 +126,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       .filter(([key, value]) => !value || !value.toString().trim())
       .map(([key]) => key);
 
-    console.log(missingFields.length, "missingFields.length");
+    // console.log(missingFields.length, "missingFields.length");
 
     if (missingFields.length > 0) {
       return sendError(res, httpStatus.BAD_REQUEST, {
@@ -168,7 +167,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       lastName,
       email,
       password,
-      
+
       weight,
       sport,
       dateOfBirth,
@@ -412,7 +411,7 @@ export const forgotPassword = catchAsync(
 export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const email = req.query.email as string;
 
-  const {email, password, confirmPassword } = req.body;
+  const { email, password, confirmPassword } = req.body;
 
   if (!password || !confirmPassword) {
     return sendError(res, httpStatus.BAD_REQUEST, {
@@ -446,101 +445,18 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
-//   const { otp, email } = req.body;
-//   const authHeader = req.headers.authorization;
-
-//   // if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//   //   return sendError(res, httpStatus.UNAUTHORIZED, {
-//   //     message: "No token provided or invalid format.",
-//   //   });
-//   // }
-//   const generateToken = jwt.sign({ email }, JWT_SECRET_KEY as string, {
-//     expiresIn: "7d",
-//   });
-
-//   const token = generateToken.split(" ")[1];
-
-//   const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as {
-//     email: string;
-//   };
-//   const email = decoded.email;
-
-//   const storedOTP = await getStoredOTP(email);
-
-//   if (!storedOTP || storedOTP !== otp) {
-//     return sendError(res, httpStatus.BAD_REQUEST, {
-//       message: "Invalid or expired OTP",
-//     });
-//   }
-
-//   const {
-//     firstName,
-//     lastName,
-//     password,
-//     height,
-//     weight,
-//     sport,
-//     dateOfBirth,
-//     gym,
-//     company_Name,
-//     website,
-//     location,
-//     company_Address,
-//     fightRecord,
-//     owner_firstName,
-//     owner_lastName,
-//     phoneNumber,
-//     gender,
-//   } = (await getUserRegistrationDetails(email)) as IPendingUser;
-//   //console.log(objective, "objective from controller");
-//   const hashedPassword = await hashPassword(password);
-
-//   const { createdUser } = await createUser({
-//     firstName,
-//     lastName,
-//     email,
-//     hashedPassword,
-//     height,
-//     weight,
-//     sport,
-//     dateOfBirth,
-//     gym,
-//     company_Name,
-//     website,
-//     company_Address,
-//     owner_firstName,
-//     owner_lastName,
-//     phoneNumber,
-//     gender,
-//     fightRecord,
-//     location,
-//   });
-
-//   const userMsg = "Welcome to LikeMine_App.";
-//   const adminMsg = `${firstName} has successfully registered.`;
-
-//   await emitNotification({
-//     userId: createdUser._id as string,
-//     userMsg,
-//     adminMsg,
-//   });
-
-//   sendResponse(res, {
-//     statusCode: httpStatus.CREATED,
-//     success: true,
-//     message: "Registration successful.",
-//     data: null,
-//   });
-// });
 
 export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
   const { otp, email } = req.body;
+  // console.log("Step 1: Received OTP verification request", { otp, email });
 
   try {
     // Verify OTP
     const storedOTP = await getStoredOTP(email);
+    // console.log("Step 2: Stored OTP retrieved", { storedOTP });
+
     if (!storedOTP || storedOTP !== otp) {
+      // console.log("Step 2.1: OTP validation failed");
       return sendError(res, httpStatus.BAD_REQUEST, {
         message: "Invalid or expired OTP",
       });
@@ -548,7 +464,10 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
 
     // Get user registration details
     const userDetails = await getUserRegistrationDetails(email);
+    // console.log("Step 3: User registration details retrieved", { userDetails });
+
     if (!userDetails) {
+      // console.log("Step 3.1: No user registration details found");
       return sendError(res, httpStatus.NOT_FOUND, {
         message: "User registration details not found.",
       });
@@ -558,7 +477,6 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       firstName,
       lastName,
       password,
-      
       weight,
       sport,
       dateOfBirth,
@@ -575,14 +493,15 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       role,
     } = userDetails;
 
-    // Hash password and create the user
+    // console.log("Step 4: Hashing password");
     const hashedPassword = await hashPassword(password);
+
+    console.log("Step 5: Creating user");
     const { createdUser } = await createUser({
       firstName,
       lastName,
       email,
       hashedPassword,
-      
       weight,
       sport,
       dateOfBirth,
@@ -597,17 +516,17 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       fightRecord,
       location,
       role,
-      interests: []
+      interests: [],
     });
-    console.log(role);
-    // Generate JWT Token
-    const token = jwt.sign(
-      { id: createdUser._id, email, role: createdUser.role },
-      JWT_SECRET_KEY as string,
-      { expiresIn: "7d" }
-    );
 
-    // Emit notification
+    // console.log("Step 6: Generating JWT token");
+    // const token = jwt.sign(
+    //   { id: createdUser._id, email, role: createdUser.role },
+    //   JWT_SECRET_KEY as string,
+    //   { expiresIn: "7d" }
+    // );
+
+    console.log("Step 7: Emitting notification");
     const userMsg = "Welcome to LikeMine_App.";
     const adminMsg = `${firstName} has successfully registered.`;
     await emitNotification({
@@ -616,14 +535,15 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       adminMsg,
     });
 
-    // Send response with the token
+    // console.log("Step 8: Sending success response");
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
       message: "Registration successful.",
-      data: { token },
+      data: {  },
     });
   } catch (err) {
+    // console.error("Error during OTP verification:", err);
     return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, {
       message: "An error occurred during OTP verification.",
     });
@@ -632,7 +552,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
 
 export const verifyForgotPasswordOTP = catchAsync(
   async (req: Request, res: Response) => {
-    const {email, otp } = req.body;
+    const { email, otp } = req.body;
     // const email = req.query.email as string;
 
     const otpRecord = await OTPModel.findOne({ email });

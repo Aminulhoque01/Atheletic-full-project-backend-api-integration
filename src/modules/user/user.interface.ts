@@ -48,7 +48,7 @@ export type IUser = {
   status: "active" | "blocked";
   age: string;
   gender: string;
-  fightRecord: object;
+  fightRecord?: object;
   about: string;
   bio: string;
 
