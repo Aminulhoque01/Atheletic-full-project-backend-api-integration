@@ -5,6 +5,6 @@ export type ICategory = {
     publicFileURL: string;
     path: string;
   };
-  category_name: string;
+  categoryName: string;
 
 };

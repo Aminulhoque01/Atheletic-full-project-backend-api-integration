@@ -1,11 +1,13 @@
 import express from "express";
 import { adminMiddleware } from "../../middlewares/auth";
-import { getAllPayment, paymentCreate } from "./payment.controller";
+import { getAllAmount, getAllPayment, getTodayAmount, paymentCreate } from "./payment.controller";
 
 const router = express.Router();
 
-router.post("/", adminMiddleware("fighter"), adminMiddleware("eventManager"), paymentCreate);
+router.post("/", adminMiddleware(["fighter","eventManager"]), paymentCreate);
 router.get("/history", adminMiddleware("admin"), getAllPayment);
+router.get("/total-amount", adminMiddleware("admin"), getAllAmount);
+router.get("/today-amount", adminMiddleware("admin"), getTodayAmount);
 
 export const paymentRoutes = router;
 

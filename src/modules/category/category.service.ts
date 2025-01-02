@@ -2,7 +2,7 @@ import { CategoryModel } from "./category.model";
  
 import { ICategory } from "./category.interface";
 
-const createCategory = async (category:ICategory):Promise<ICategory> => {
+const createCategory = async ( category: ICategory):Promise<ICategory> => {
     const result = await CategoryModel.create(category);
     return result
 };

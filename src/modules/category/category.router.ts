@@ -12,8 +12,8 @@ router.post(
   CategoryController.createCategory
 );
 
-router.patch(
-  "/update/:id",
+router.post(
+  "/update",
   adminMiddleware(["admin", "eventManager", "fighter"]), // Multiple roles can access
   upload.single("image"),
   CategoryController.updateCategory

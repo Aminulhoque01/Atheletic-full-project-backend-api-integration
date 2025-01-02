@@ -32,6 +32,10 @@ const paymentSchema: Schema<IPayment> = new mongoose.Schema(
       enum: ["completed", "pending", "failed"],
       required: true,
     },
+    paymentType: {
+      type: String,
+      // required: true,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -42,5 +46,4 @@ const paymentSchema: Schema<IPayment> = new mongoose.Schema(
   },
 );
 
-export const PaymentModel: Model<IPayment> =
-  mongoose.models.Payment || mongoose.model<IPayment>("Payment", paymentSchema);
+export const PaymentModel: Model<IPayment> = mongoose.models.Payment || mongoose.model<IPayment>("Payment", paymentSchema);

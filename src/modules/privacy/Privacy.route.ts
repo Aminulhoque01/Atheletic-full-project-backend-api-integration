@@ -10,6 +10,6 @@ import {
 const router = express.Router();
 router.post("/create", adminMiddleware("admin"), createPrivacy);
 router.get("/", getAllPrivacy);
-router.post("/update", updatePrivacy);
+router.patch("/update", adminMiddleware("admin"), updatePrivacy);
 
 export const PrivacyRoutes = router;

@@ -58,7 +58,7 @@ import { errorLogger } from "../shared/logger";
             message: error?.message,
           },
         ]
-      : [];
+      :[];
   }
 
   res.status(statusCode).json({

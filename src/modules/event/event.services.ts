@@ -7,7 +7,8 @@ import { IGeneticResponse } from "../../interface/commont";
 import { paginationHelper } from "../../helpers/paginationHelper";
 
 const createEvent = async (payload: IEvent): Promise<IEvent | null> => {
-  const result = await Event.create(payload);
+  const result = await Event.create(payload,);
+
   return result;
 };
 
@@ -75,6 +76,7 @@ const eventUpdate = async (
   id: string,
   payload: Partial<IEvent>
 ): Promise<IEvent | null> => {
+  
   const result = await Event.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });

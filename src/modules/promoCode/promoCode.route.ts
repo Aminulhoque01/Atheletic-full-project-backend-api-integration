@@ -16,6 +16,6 @@ router.get("/", adminMiddleware("admin"), getPromoCode);
 router.post("/update", adminMiddleware("admin"), updatePromoCode);
 router.post("/delete", adminMiddleware("admin"), deletePromoCode);
 router.post("/restore", adminMiddleware("admin"), restorePromoCode);
-// router.post("/use-cupon", adminMiddleware("user"), usePromoCode);
+router.post("/use-cupon", adminMiddleware("fighter"), usePromoCode);
 
 export const promoCodeRoutes = router;

@@ -20,7 +20,7 @@ const promoCodeSchema: Schema<IPromoCode> = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to User model
+      ref: "fighter", // Reference to User model
     },
     isDeleted: {
       type: Boolean,

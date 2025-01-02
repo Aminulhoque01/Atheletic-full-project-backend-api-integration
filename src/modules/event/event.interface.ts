@@ -1,8 +1,9 @@
 import { Model } from "mongoose";
 
 export interface IEvent {
-  eventID: String;
-
+  _id: string;
+  eventID: string;
+  managerId: object;
   title: string;
   eligibilityCriteria: {
     age: number;
@@ -42,7 +43,8 @@ export interface IEvent {
   isRegistered?: boolean; // Event description
   createdAt?: Date; // Optional created date
   updatedAt?: Date; // Optional updated date
-  
+   // Event price
+ 
 }
 
 export type EventModel = Model<IEvent, Record<string, unknown>>;

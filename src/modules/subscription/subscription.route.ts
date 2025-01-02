@@ -16,8 +16,8 @@ router.post("/create", adminMiddleware("admin"), createSubscription);
 router.get("/", getSubscription);
 router.post("/update", adminMiddleware("admin"), updateSubscription);
 router.delete("/delete", adminMiddleware("admin"), deleteSubscription);
-router.get("/my", adminMiddleware("fighter"), getUserSubscriptions);
-router.get("/my", adminMiddleware("eventManager"), getUserSubscriptions);
+router.get("/my", adminMiddleware(["fighter","eventManager"]), getUserSubscriptions);
+
 router.post('/restore', adminMiddleware("admin"), restorePromoCode);
 
 export const subscriptionRoutes = router;

@@ -1,4 +1,9 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
+interface IEarning {
+  amount: number;
+  date: Date;
+  description?: string;
+}
 
 export type IPendingUser = {
   email: string;
@@ -35,11 +40,14 @@ export type IUser = {
   address?: string;
   height?: number;
   weight?: number;
+  weightClass?: string;
+  trainingType?: string;
+  isProUser: boolean;
   sport?: string;
   dateOfBirth?: Date;
   gym?: string;
   disable: string;
-  interests?: string[];
+  interests: mongoose.Types.ObjectId[];
   image?: {
     publicFileURL: string;
     path: string;
@@ -51,7 +59,8 @@ export type IUser = {
   fightRecord?: object;
   about: string;
   bio: string;
-
+  earnings: number;
+  isRegistered:boolean
   // evemtManager
   company_Name:string;
   website:string,
@@ -64,6 +73,9 @@ export type IUser = {
   expiryDate: Date | null;
   activeDate: Date | null;
   isDeleted: boolean;
+  fcmToken: string;
+  events: [string]
+ 
 } & Document;
 
 export type IOTP = {

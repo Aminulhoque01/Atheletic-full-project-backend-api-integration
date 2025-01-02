@@ -103,6 +103,7 @@ export const getAllAbout = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateAbout = catchAsync(async (req: Request, res: Response) => {
+  
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return sendError(res, httpStatus.UNAUTHORIZED, {
@@ -156,4 +157,5 @@ export const updateAbout = catchAsync(async (req: Request, res: Response) => {
     message: "About updated successfully.",
     data: result,
   });
+  
 });

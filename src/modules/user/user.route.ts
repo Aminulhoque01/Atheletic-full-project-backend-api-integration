@@ -16,9 +16,16 @@ import {
   BlockUser,
   deleteUser,
   adminloginUser,
+  getAllFighter,
+  getAllEventManager,
+  recentFighterUser,
+  getAllEventManagerEarning,
+  
+  
 } from "./user.controller";
 import upload from "../../middlewares/fileUploadNormal";
 import { adminMiddleware } from "../../middlewares/auth";
+// import { getAllEventManager } from "./user.service";
 
 const router = express.Router();
 router.post(
@@ -40,6 +47,13 @@ router.get("/my-profile", getSelfInfo);
 router.get("/all-user", adminMiddleware("admin"), getAllUsers);
 router.post("/block-user", adminMiddleware("admin"), BlockUser);
 
-router.post("/delete", adminMiddleware("admin"), deleteUser);
+router.delete("/delete/", adminMiddleware("admin"), deleteUser);
+
+
+router.get("/fighter", adminMiddleware("admin"), getAllFighter);
+router.get("/eventManager", adminMiddleware("admin"), getAllEventManager);
+router.get("/recentUser", adminMiddleware("admin"), recentFighterUser);
+
+router.get("/earning",adminMiddleware("eventManager"), getAllEventManagerEarning)
 
 export const UserRoutes = router;

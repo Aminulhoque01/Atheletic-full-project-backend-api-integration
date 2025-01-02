@@ -35,6 +35,7 @@ const FighterSchema = new Schema<IFighter, FighterModel>({
     type: [String],
     default: [],
   },
+  
   isRegistered:{ type: Boolean, default: false }, 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

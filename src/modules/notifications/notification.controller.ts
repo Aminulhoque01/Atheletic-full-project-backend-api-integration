@@ -1,130 +1,165 @@
+// import httpStatus from "http-status";
+
 import httpStatus from "http-status";
-
-import jwt from "jsonwebtoken";
-
-import { Request, Response } from "express";
-
-import { findUserById } from "../user/user.service";
-import { NotificationModel } from "./notification.model";
-import catchAsync from "../../utils/catchAsync";
-import sendError from "../../utils/sendError";
 import sendResponse from "../../utils/sendResponse";
+import catchAsync from "../../utils/catchAsync";
+import { Request, Response } from "express";
+import { notificationService } from "./notification.service";
 
-export const getMyNotification = catchAsync(
-  async (req: Request, res: Response) => {
-    // Extract the token from the Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return sendError(res, httpStatus.UNAUTHORIZED, {
-        message: "No token provided or invalid format.",
-      });
-    }
+// import jwt from "jsonwebtoken";
 
-    const token = authHeader.split(" ")[1]; // Get the token part from 'Bearer <token>'
+// import { Request, Response } from "express";
+// import { findUserById } from "../user/user.service";
+// import { NotificationModel } from "./notification.model";
+// import catchAsync from "../../utils/catchAsync";
+// import sendError from "../../utils/sendError";
+// import sendResponse from "../../utils/sendResponse";
 
-    try {
-      // Decode the token to get the user ID
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET_KEY as string,
-      ) as { id: string };
-      const userId = decoded.id;
 
-      // Find the user by userId
-      const user = await findUserById(userId);
-      if (!user) {
-        return sendError(res, httpStatus.NOT_FOUND, {
-          message: "User not found.",
-        });
-      }
 
-      // Pagination logic
-      const page = parseInt(req.query.page as string, 10) || 1;
-      const limit = parseInt(req.query.limit as string, 10) || 20;
-      const skip = (page - 1) * limit;
 
-      let notifications;
-      let totalNotifications;
+// export const getMyNotification = catchAsync(
+//   async (req: Request, res: Response) => {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//       return sendError(res, httpStatus.UNAUTHORIZED, {
+//         message: "No token provided or invalid format.",
+//       });
+//     }
 
-      if (user.role === "admin") {
-        // For admin, fetch all admin messages
-        notifications = await NotificationModel.find({
-          adminMsg: { $exists: true },
-        })
-          .select("adminMsg createdAt updatedAt")
-          .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-          .skip(skip)
-          .limit(limit);
+//     const token = authHeader.split(" ")[1];
+//     try {
+//       const decoded = jwt.verify(
+//         token,
+//         process.env.JWT_SECRET_KEY as string
+//       ) as { id: string; userName: string };
+//       const userId = decoded.id;
 
-        totalNotifications = await NotificationModel.countDocuments({
-          adminMsg: { $exists: true },
-        });
-      } else {
-        // For regular users, fetch their specific notifications
-        notifications = await NotificationModel.find({ userId: userId })
-          .select("userId userMsg createdAt updatedAt")
-          .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-          .skip(skip)
-          .limit(limit);
+//       const user = await findUserById(userId);
+//       if (!user) {
+//         return sendError(res, httpStatus.NOT_FOUND, {
+//           message: "User not found.",
+//         });
+//       }
 
-        totalNotifications = await NotificationModel.countDocuments({
-          userId: userId,
-        });
-      }
+//       const page = parseInt(req.query.page as string, 10) || 1;
+//       const limit = parseInt(req.query.limit as string, 10) || 20;
+//       const skip = (page - 1) * limit;
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalNotifications / limit);
+//       let notifications = [];
+//       let totalNotifications = 0;
 
-      // Format the notifications
-      const formattedNotifications = notifications.map((notification) => ({
-        _id: notification._id,
-        msg:
-          user.role === "admin" ? notification.adminMsg : notification.userMsg,
-        createdAt: notification.createdAt,
-        updatedAt: notification.updatedAt,
-      }));
+//       if (user.role === "admin") {
+//         notifications = await NotificationModel.find({
+//           adminMsg: { $exists: true },
+//         })
+//           .select("adminMsg createdAt updatedAt userId userName")
+//           .sort({ createdAt: -1 })
+//           .skip(skip)
+//           .limit(limit);
 
-      // Check if notifications is empty
-      if (formattedNotifications.length === 0) {
-        return sendResponse(res, {
-          statusCode: httpStatus.OK,
-          success: true,
-          message: "You have no notifications.",
-          data: {
-            notifications: [],
-            currentPage: page,
-            totalPages,
-            totalNotifications,
-            limit,
-          },
-        });
-      }
+//         totalNotifications = await NotificationModel.countDocuments({
+//           adminMsg: { $exists: true },
+//         });
+//       } else if (user.role === "eventManager") {
+//         notifications = await NotificationModel.find({
+//           userId: userId,
+//           eventManagerMsg: { $exists: true },
+//         })
+//           .select("userId userName eventManagerMsg createdAt updatedAt")
+//           .sort({ createdAt: -1 })
+//           .skip(skip)
+//           .limit(limit);
 
-      // Pagination logic for prevPage and nextPage
-      const prevPage = page > 1 ? page - 1 : null;
-      const nextPage = page < totalPages ? page + 1 : null;
+//         totalNotifications = await NotificationModel.countDocuments({
+//           userId: userId,
+//           eventManagerMsg: { $exists: true },
+//         });
+//       } else if (user.role === "fighter") {
+//         notifications = await NotificationModel.find({
+//           userId: userId,
+//           userMsg: { $exists: true },
+//         })
+//           .select("userId userName userMsg createdAt updatedAt")
+//           .sort({ createdAt: -1 })
+//           .skip(skip)
+//           .limit(limit);
 
-      // Send response with pagination details
+//         totalNotifications = await NotificationModel.countDocuments({
+//           userId: userId,
+//           userMsg: { $exists: true },
+//         });
+//       }
+
+//       const totalPages = Math.ceil(totalNotifications / limit);
+//       const formattedNotifications = notifications.map((notification) => ({
+//         _id: notification._id,
+//         userId: notification.userId,
+//         msg:
+//           user.role === "admin"
+//             ? notification.adminMsg
+//             : user.role === "eventManager"
+//             ? notification.eventManagerMsg
+//             : notification.userMsg,
+//         createdAt: notification.createdAt,
+//         updatedAt: notification.updatedAt,
+//       }));
+
+//       const prevPage = page > 1 ? page - 1 : null;
+//       const nextPage = page < totalPages ? page + 1 : null;
+
+//       sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: "Here is your notifications.",
+//         data: {
+//           notifications: formattedNotifications,
+//           pagination: {
+//             totalPages,
+//             currentPage: page,
+//             prevPage: prevPage ?? 1,
+//             nextPage: nextPage ?? 1,
+//             limit,
+//             totalNotifications,
+//           },
+//         },
+//       });
+//     } catch (error) {
+//       return sendError(res, httpStatus.UNAUTHORIZED, {
+//         message: "Invalid token or token expired.",
+//       });
+//     }
+//   }
+// );
+
+
+
+
+
+const createNotification = catchAsync(async (req: Request, res: Response) => {
+  
+  const { recipientType, recipientId, message } = req.body;
+  const notification = await notificationService.createNotification(recipientType, recipientId, message);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Notification created successfully.",
+    data: notification,
+  });
+});
+
+const getNotification = catchAsync(async (req: Request, res: Response) => {
+  const { recipientType, recipientId } = req.query;
+      const notifications = await notificationService.getNotification(recipientType as string, recipientId as string);
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Here is your notifications.",
-        data: {
-          notifications: formattedNotifications,
-          pagination: {
-            totalPages,
-            currentPage: page,
-            prevPage: prevPage ?? 1,
-            nextPage: nextPage ?? 1,
-            limit,
-            totalNotifications,
-          },
-        },
-      });
-    } catch (error) {
-      return sendError(res, httpStatus.UNAUTHORIZED, {
-        message: "Invalid token or token expired.",
-      });
-    }
-  },
-);
+        message: "Here are your notifications.",
+        data: notifications,
+      })
+});
+
+export const notificationController = {
+  createNotification,
+  getNotification
+}

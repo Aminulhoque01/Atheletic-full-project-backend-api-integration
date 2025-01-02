@@ -19,6 +19,27 @@ const PendingUserSchema = new Schema<IPendingUser>(
       draws: { type: Number, required: true },
     },
     location: { type: String },
+    company_Address: {
+      type: String,
+      // default:""
+    },
+    company_Contact: {
+      type: String,
+      // default:""
+    },
+    owner_firstName: {
+      type: String,
+      // default:""
+    },
+    owner_lastName: {
+      type: String,
+      // default:""
+    },
+    phoneNumber: {
+      type: String,
+      // default:""
+    },
+
     role: {
       type: String,
       enum: ["admin", "fighter", "eventManager"],
@@ -58,7 +79,7 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "fighter", "eventManager", "user"],
+      enum: ["admin", "fighter", "eventManager"],
       // default: "user",
           
     },
@@ -73,6 +94,10 @@ const UserSchema = new Schema<IUser>(
       losses: { type: Number,   },
       draws: { type: Number,   },
     },
+    weightClass: { type: String },
+    trainingType: { type: String },
+    isProUser: { type: Boolean, default: false },
+    isRegistered:{type: Boolean, default: false},
     company_Name: {
       type: String,
     },
@@ -83,18 +108,23 @@ const UserSchema = new Schema<IUser>(
     },
     company_Address: {
       type: String,
+      // default:""
     },
     company_Contact: {
       type: String,
+      // default:""
     },
     owner_firstName: {
       type: String,
+      // default:""
     },
     owner_lastName: {
       type: String,
+      // default:""
     },
     phoneNumber: {
       type: String,
+      // default:""
     },
 
     age: {
@@ -113,7 +143,7 @@ const UserSchema = new Schema<IUser>(
         ref: "Category",
       }
     ],
-
+    earnings: { type: Number,  },
     cuponCode: {
       type: String, // Store the name of the promo code
       default: "", // Default value will be an empty string
@@ -126,16 +156,23 @@ const UserSchema = new Schema<IUser>(
       type: Date, // Store the name of the promo code
       default: null, // Default value will be an empty string
     },
-
+    events: { type: [String], default: [] },
     isDeleted: {
       type: Boolean,
       default: false,
     },
+    fcmToken:{
+      type: String,
+      default:""
+    }
+    
   },
   { timestamps: true }
 );
 
 export const UserModel = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+
+
 
 const OTPSchema = new Schema<IOTP>({
   email: { type: String, required: true, trim: true },

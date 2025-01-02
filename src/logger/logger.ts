@@ -113,7 +113,7 @@ export const logHttpRequests = (req: Request, res: Response, next: NextFunction)
     };
     //  console.log(req)
     logger.info({
-      message: ` Incoming Request ${colorizeByStatusUrl(req.method)} ${colorizeByStatusCode(res.statusCode)} ${magenta(req.originalUrl)} ${yellowBright(`${Date.now() - startTime} ms`)}`,
+      message:`Incoming Request ${colorizeByStatusUrl(req.method)} ${colorizeByStatusCode(res.statusCode)} ${magenta(req.originalUrl)} ${yellowBright(`${Date.now() - startTime} ms`)}`,
       size: res.get("Content-Length") || 0,
     });
   });

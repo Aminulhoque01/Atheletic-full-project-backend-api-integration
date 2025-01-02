@@ -11,6 +11,7 @@ export interface IFighter {
   events: string[];
   isRegistered: boolean;
   participants: string[];
+   
   createdAt?: Date; // Optional created date
   updatedAt?: Date; // Optional updated date
 }

@@ -6,49 +6,54 @@
     "auditLog": "D:\\ATHLETIC-PROJECT\\winston\\error\\.20d529f1ab30340cefef53b574882d27f5ef58f4-audit.json",
     "files": [
         {
-            "date": 1735028523557,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-14-error.log",
-            "hash": "63fc4e75b0300f84f82379f82de2e57172d57fedd8eede23fe41192c69ce8ca0"
+            "date": 1735722697268,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-15-error.log",
+            "hash": "bad24704cbca00aac3ee3b1f0399649753aaaea4d8e29841a33f0c761dab4563"
         },
         {
-            "date": 1735030818446,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-15-error.log",
-            "hash": "6180fcf24148e40cb084fe0f02da0ef1321f82d889cff82c36092d724c311a7d"
+            "date": 1735725763825,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-16-error.log",
+            "hash": "1bfdf5d7c3803a6fc08b114bbdfe383697a4df101538e8eb6872396c258ebff0"
         },
         {
-            "date": 1735035121956,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-16-error.log",
-            "hash": "fc96ead09c9be9c3e2295f9d7388370e7111e29c55c426579087d5ae96e4eb8a"
+            "date": 1735729444316,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-17-error.log",
+            "hash": "056fe3f7b452edf0de98409398912def0bfadd7f7946d0709ec81df457c674c9"
         },
         {
-            "date": 1735039304353,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-17-error.log",
-            "hash": "cee98f7ccfc807a013207abc0f26239127dbf01dc0f9b7ae178e6c5f3a54f91d"
+            "date": 1735733017089,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-18-error.log",
+            "hash": "081ca87b879a12f051bbebf62c8b56160738872f549b05dbbc7e35d18ec9c465"
         },
         {
-            "date": 1735041778616,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-18-error.log",
-            "hash": "ffd9e60febc491609bb4727d18d2dda6265a408a9230dff63febd0226e24f3d3"
+            "date": 1735789289560,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-09-error.log",
+            "hash": "b6c69e736073497859c006dae035978e3fc353747448f86e3ee22b6b3684ba20"
         },
         {
-            "date": 1735045547745,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\24-12-2024-19-error.log",
-            "hash": "eb9e6093aca101f3c0ff154c91c63255bbdeb6240b5733da0d3f6cd63e0b8dc6"
+            "date": 1735790628650,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-10-error.log",
+            "hash": "eb70382dda42af564c92b16e2c69e01036ed9ebf241e3cfdface13fd660ee6eb"
         },
         {
-            "date": 1735095950950,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\25-12-2024-09-error.log",
-            "hash": "910ba23a4d5dfe3faf9a98854141f1f59d410b1f491c5995a261d8e00d7fd6fd"
+            "date": 1735794037236,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-11-error.log",
+            "hash": "0820bf4ad495d5006f0514de4323d06d325029fa84bb2bf69b6abeeaf4e9ed7e"
         },
         {
-            "date": 1735099534994,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\25-12-2024-10-error.log",
-            "hash": "f9a06e00199e5473f30114d42dfefa066a4f1ab1baf1ee4a1602bd6e912c1cf6"
+            "date": 1735800213045,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-12-error.log",
+            "hash": "94228ac3b77211a125f34d3db7dee85fc1225810b4aff46ee6ce130be5b20fb4"
         },
         {
-            "date": 1735103652969,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\25-12-2024-11-error.log",
-            "hash": "23517b6633d86c8ea073cb2bf9ea931197def60e7a5e030c53cce0a2e95b20d7"
+            "date": 1735801426211,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-13-error.log",
+            "hash": "3baff7848fc26d28bc90076051dcb5cd040f56947ff3323b8bc3dc22c2231483"
+        },
+        {
+            "date": 1735808914553,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-15-error.log",
+            "hash": "adf6764c121cb6226328846fb52322bd0256889817f37a7683ea7d80a7a20713"
         }
     ],
     "hashType": "sha256"

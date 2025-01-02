@@ -3,7 +3,7 @@ import { UserRoutes } from "../modules/user/user.route";
 import { TermsRoutes } from "../modules/Terms/Terms.route";
 import { AboutRoutes } from "../modules/About/About.route";
 import { PrivacyRoutes } from "../modules/privacy/Privacy.route";
-import { NotificationRoutes } from "../modules/notifications/notification.route";
+// import { NotificationRoutes } from "../modules/notifications/notification.route";
 import { promoCodeRoutes } from "../modules/promoCode/promoCode.route";
 import { feedBackRoutes } from "../modules/Feedback/feedback.route";
 import { subscriptionRoutes } from "../modules/subscription/subscription.route";
@@ -14,6 +14,11 @@ import { ListingRoutes } from "../modules/listing/listing.router";
 import { FighterRoutes } from "../modules/fighter-registion-event/fighter.router";
 import { ParticipantRouter } from "../modules/participant/participant.router";
 import { CategoryRoutes } from "../modules/category/category.router";
+import { EventRequestRoutes } from "../modules/eventRequest/eventRequest.route";
+import { SupportRoutes } from "../modules/support/support.route";
+import { withdrawRouter } from "../modules/withdraw-request/withdraw.router";
+import { NotificationRoutes } from "../modules/notifications/notification.route";
+
 
 
 const router = express.Router();
@@ -29,7 +34,6 @@ const router = express.Router();
 // router.use("/api/v1/purchase", paymentRoutes);
 // router.use("/api/v1/event", EventRoutes);
 
-
 const apiRoutes = [
   {
     path: "/auth",
@@ -43,7 +47,15 @@ const apiRoutes = [
     path: "/event",
     route: EventRoutes,
   },
- 
+  {
+    path: "/eventRequest",
+    route: EventRequestRoutes,
+  },
+  {
+    path: "/withdraw",
+    route: withdrawRouter,
+  },
+
   {
     path: "/listing",
     route: ListingRoutes,
@@ -69,7 +81,11 @@ const apiRoutes = [
     route: PrivacyRoutes,
   },
   {
-    path: "/notification",
+    path: "/support",
+    route: SupportRoutes,
+  },
+  {
+    path: "/notifications",
     route: NotificationRoutes,
   },
   {
@@ -84,15 +100,13 @@ const apiRoutes = [
     path: "/payment",
     route: paymentRoutes,
   },
- 
+
   {
     path: "/feedback",
     route: feedBackRoutes,
   },
- 
 ];
 
 apiRoutes.forEach((route) => router.use(route.path, route.route));
-
 
 export default router;

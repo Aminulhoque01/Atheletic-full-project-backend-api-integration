@@ -5,9 +5,9 @@ import { DATABASE_URL, PORT } from "./config";
 import { initSocketIO } from "./utils/socket";
 
 import http from "http";
+import { Server } from "socket.io";
 
 const server = http.createServer(app);
-initSocketIO(server);
 
 const HOST = "192.168.10.134"; // Replace with your desired IP
 
@@ -58,3 +58,4 @@ process.on("uncaughtException", (error) => {
     process.exit(1);
   }
 });
+

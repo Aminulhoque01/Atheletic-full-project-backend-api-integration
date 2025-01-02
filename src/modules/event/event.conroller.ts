@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { EventFilterableFields } from "./event.constant";
 import { IEvent } from "./event.interface";
@@ -8,26 +9,69 @@ import sendResponse from "../../utils/sendResponse";
 import pick from "../../shared/pick";
 import { paginationFields } from "../../shared/constrant";
 import { Error } from "mongoose";
-import { CategoryService } from "../category/category.service";
-import { ICategory } from "../category/category.interface";
 
-export const createEvent: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-    const { ...userData } = req.body;
+import sendError from "../../utils/sendError";
+import { JWT_SECRET_KEY } from '../../config';
+import { Event } from "./event.models";
+import { UserModel } from "../user/user.model";
 
-    const result = await EventService.createEvent(userData);
+export const createEvent: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { ...otherEventData } = req.body;
+
+  
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return sendError(res, httpStatus.UNAUTHORIZED, {
+        message: "No token provided or invalid format.",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as {
+      id: string;
+    };
+    const managerId = decoded.id;
+    console.log(managerId)
+
+    if (!managerId) {
+      res.status(401).json({ error: "User not authenticated" });
+      return;
+    }
+
+
+
+    const managerid = await Event.findByIdAndUpdate(
+      managerId,
+      { $set: { managerId } },
+      { new: true } // Return the updated document
+    ).populate("managerId");
+    
+
+    const result = await EventService.createEvent(otherEventData);
 
     if (!result) {
       throw new Error("Failed to create event"); // Ensure null is handled explicitly
     }
 
+    const transformedResult = {
+      ...result.toObject(),
+      eventId: result._id,
+      managerId: managerid?.managerId,
+    };
+
     sendResponse<IEvent>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Event created successfully!",
-      data: result,
+      data: transformedResult,
     });
   }
 );
+
+
+
 
 const getAllEvent: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -74,7 +118,9 @@ const updateEvent: RequestHandler = catchAsync(
     const id = req.params.id;
     const updateData = req.body;
 
-    const result = await EventService.eventUpdate(id, updateData);
+    
+
+    const result = await EventService.eventUpdate(id, updateData);;
 
     if (!result) {
       return sendResponse<IEvent | null>(res, {
@@ -122,8 +168,6 @@ const deleteEvent: RequestHandler = catchAsync(
   }
 );
 
-
-
 const generateFighterCard = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await EventService.generateFighter(id);
@@ -140,13 +184,11 @@ const generateFighterCard = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 export const EventController = {
   createEvent,
   getAllEvent,
   getSingleEvent,
   updateEvent,
   deleteEvent,
-  generateFighterCard
-  
+  generateFighterCard,
 };

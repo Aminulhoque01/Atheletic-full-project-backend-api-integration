@@ -24,13 +24,14 @@ const subscriptionSchema: Schema<ISubscription> = new mongoose.Schema(
       trim: true,
     },
     feature: {
-      type: Object,
-      default: {
-        subscription_date: "2024-01-01",
-        subscription_end_date: "2024-02-01",
-        subscription_status: "inactive",
-        subscription_details: "No subscription details available",
-      },
+      type: [String],
+      default: [
+        "Unlimited Product updates",
+        "Unlimited Product updates",
+        "Unlimited Product updates",
+        "demo reminders",
+        "Email and community support"
+      ],
     },
     isDeleted: {
       type: Boolean,

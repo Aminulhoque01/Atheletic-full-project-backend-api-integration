@@ -38,7 +38,7 @@ export const giveFeedback = catchAsync(async (req: Request, res: Response) => {
     });
   }
   // Create feedback
-  const name = user.name;
+  const name = user.firstName;
   const email = user.email;
 
   const addFeedback = await createFeedback({

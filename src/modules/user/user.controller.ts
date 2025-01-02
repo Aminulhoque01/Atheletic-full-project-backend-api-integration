@@ -1,3 +1,4 @@
+import { getAllEventManagers, getEventManagerEarnings } from './user.service';
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
@@ -6,18 +7,26 @@ import nodemailer from "nodemailer";
 import catchAsync from "../../utils/catchAsync";
 import sendError from "../../utils/sendError";
 import sendResponse from "../../utils/sendResponse";
+
+
 import {
   createUser,
   findUserByEmail,
   findUserById,
   generateOTP,
   generateToken,
+  
+  getAllFighters,
   getStoredOTP,
   getUserList,
   getUserRegistrationDetails,
   hashPassword,
+  recentFighterUsers,
   saveOTP,
   sendOTPEmail,
+  
+ 
+  
   updateUserById,
   userDelete,
 } from "./user.service";
@@ -31,8 +40,9 @@ import {
   Nodemailer_GMAIL,
   Nodemailer_GMAIL_PASSWORD,
 } from "../../config";
-import { emitNotification } from "../../utils/socket";
+// import { emitNotification } from "../../utils/socket";
 import httpStatus from "http-status";
+import sendNotification from '../../utils/sendNotification';
 
 export const registerUser = catchAsync(async (req: Request, res: Response) => {
   const {
@@ -55,6 +65,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     fightRecord,
     location,
     role,
+    fcmToken,
   } = req.body;
 
   //  admin all fineld fined
@@ -83,7 +94,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       email,
       password,
       role,
-
+      
       weight,
       sport,
       dateOfBirth,
@@ -135,23 +146,6 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
-  // height, weight, sport, dateOfBirth, gym, company_Name, website, company_Address, owner_firstName, owner_lastName, phoneNumber, userData.role, userData.company_Contact,
-
-  // const validationError = validateUserInput(
-  //   firstName,
-  //   email,
-  //   password,
-  //   lastName
-  // );
-  // if (validationError) {
-  //   return sendError(res, httpStatus.BAD_REQUEST, validationError);
-  // }
-
-  // if (password !== confirmPassword) {
-  //   return sendError(res, httpStatus.BAD_REQUEST, {
-  //     message: "Passwords do not match",
-  //   });
-  // }
 
   const isUserRegistered = await findUserByEmail(email);
   if (isUserRegistered) {
@@ -233,7 +227,7 @@ export const resendOTP = catchAsync(async (req: Request, res: Response) => {
   }
 
   const newOTP = generateOTP();
-
+  console.log(newOTP);
   await saveOTP(email, newOTP);
 
   await sendOTPEmail(email, newOTP);
@@ -242,12 +236,12 @@ export const resendOTP = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "A new OTP has been sent to your email.",
-    data: { token },
+    data: { token, newOTP },
   });
 });
 
 export const loginUser = catchAsync(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password,fcmToken, } = req.body;
 
   const user = await findUserByEmail(email);
 
@@ -285,7 +279,6 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     bio: user?.bio,
     about: user?.about,
     address: user?.address,
-    height: user?.height,
     weight: user?.weight,
     sport: user?.sport,
     dateOfBirth: user?.dateOfBirth,
@@ -332,9 +325,14 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
         address: user?.address,
       },
       AccessToken: token,
+      
     },
+   
   });
+  console.log(user)
 });
+
+
 
 export const forgotPassword = catchAsync(
   async (req: Request, res: Response) => {
@@ -411,19 +409,19 @@ export const forgotPassword = catchAsync(
 export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   // const email = req.query.email as string;
 
-  const { email, password, confirmPassword } = req.body;
+  const { email, password } = req.body;
 
-  if (!password || !confirmPassword) {
-    return sendError(res, httpStatus.BAD_REQUEST, {
-      message: "Please provide both password and confirmPassword.",
-    });
-  }
+  // if (!password || !confirmPassword) {
+  //   return sendError(res, httpStatus.BAD_REQUEST, {
+  //     message: "Please provide both password and confirmPassword.",
+  //   });
+  // }
 
-  if (password !== confirmPassword) {
-    return sendError(res, httpStatus.BAD_REQUEST, {
-      message: "Passwords do not match.",
-    });
-  }
+  // if (password !== confirmPassword) {
+  //   return sendError(res, httpStatus.BAD_REQUEST, {
+  //     message: "Passwords do not match.",
+  //   });
+  // }
 
   const user = await findUserByEmail(email);
 
@@ -445,9 +443,8 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
-  const { otp, email } = req.body;
+  const { otp, email, fcmToken } = req.body;
   // console.log("Step 1: Received OTP verification request", { otp, email });
 
   try {
@@ -496,9 +493,10 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     // console.log("Step 4: Hashing password");
     const hashedPassword = await hashPassword(password);
 
-    console.log("Step 5: Creating user");
+    // console.log("Step 5: Creating user");
     const { createdUser } = await createUser({
       firstName,
+      fcmToken,
       lastName,
       email,
       hashedPassword,
@@ -516,6 +514,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       fightRecord,
       location,
       role,
+      
       interests: [],
     });
 
@@ -526,10 +525,14 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     //   { expiresIn: "7d" }
     // );
 
-    console.log("Step 7: Emitting notification");
+    // console.log("Step 7: Emitting notification");
     const userMsg = "Welcome to LikeMine_App.";
     const adminMsg = `${firstName} has successfully registered.`;
-    await emitNotification({
+    await sendNotification({
+      title: "Welcome",
+      message: userMsg,
+      recipientType: "user",
+      recipientId: createdUser._id as string,
       userId: createdUser._id as string,
       userMsg,
       adminMsg,
@@ -540,15 +543,20 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       statusCode: httpStatus.CREATED,
       success: true,
       message: "Registration successful.",
-      data: {  },
+      data: {},
     });
   } catch (err) {
-    // console.error("Error during OTP verification:", err);
-    return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, {
+    console.error("Error during OTP verification:", err);
+    return sendError(res, httpStatus.OK, {
       message: "An error occurred during OTP verification.",
+      
     });
   }
 });
+
+
+
+
 
 export const verifyForgotPasswordOTP = catchAsync(
   async (req: Request, res: Response) => {
@@ -604,7 +612,7 @@ export const verifyForgotPasswordOTP = catchAsync(
 
 export const changePassword = catchAsync(
   async (req: Request, res: Response) => {
-    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
 
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -615,12 +623,12 @@ export const changePassword = catchAsync(
 
     const token = authHeader.split(" ")[1];
 
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      return sendError(res, httpStatus.BAD_REQUEST, {
-        message:
-          "Please provide old password, new password, and confirm password.",
-      });
-    }
+    // if (!oldPassword || !newPassword || !confirmPassword) {
+    //   return sendError(res, httpStatus.BAD_REQUEST, {
+    //     message:
+    //       "Please provide old password, new password, and confirm password.",
+    //   });
+    // }
 
     const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as {
       email: string;
@@ -641,11 +649,11 @@ export const changePassword = catchAsync(
       });
     }
 
-    if (newPassword !== confirmPassword) {
-      return sendError(res, httpStatus.BAD_REQUEST, {
-        message: "New password and confirm password do not match.",
-      });
-    }
+    // if (newPassword !== confirmPassword) {
+    //   return sendError(res, httpStatus.BAD_REQUEST, {
+    //     message: "New password and confirm password do not match.",
+    //   });
+    // }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedNewPassword;
@@ -870,7 +878,8 @@ export const BlockUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const deleteUser = catchAsync(async (req: Request, res: Response) => {
-  const id = req.query?.id as string;
+  // const id = req.query?.id as string;
+  const { id } = req.body;
 
   const user = await findUserById(id);
 
@@ -987,3 +996,64 @@ export const adminloginUser = catchAsync(
     });
   }
 );
+
+export const getAllFighter = catchAsync(async (req: Request, res: Response) => {
+  const result = await getAllFighters();
+  sendResponse<IUser[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "get all fighter successfully",
+    data: result,
+  });
+});
+
+export const getAllEventManager = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await getAllEventManagers();
+    sendResponse<IUser[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get all eventManager successfully",
+      data: result,
+    });
+  }
+);
+
+export const recentFighterUser = catchAsync(
+  async (req: Request, res: Response) => {
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const recentFighter = await recentFighterUsers(limit);
+
+    sendResponse<IUser[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get recent user successfully",
+      data: recentFighter,
+    });
+  }
+);
+
+
+
+export const getAllEventManagerEarning= catchAsync(async(req:Request, res:Response)=>{
+  
+
+  const { managerId } = req.body;
+  const earnings = await getEventManagerEarnings(managerId);
+
+  if (!managerId) {
+ 
+    throw new Error("managerId not found");
+  };
+
+  
+
+  sendResponse<number>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "get total eventManager earning successfully",
+    data: earnings,
+  })
+
+})

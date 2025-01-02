@@ -13,7 +13,7 @@ router.get('/all-event',  EventController.getAllEvent);
 router.get('/:id',  EventController.getSingleEvent);
 
 router.post("/generate-fighter/:id", EventController.generateFighterCard);
-router.patch("/:id",adminMiddleware('eventManager'), EventController.updateEvent);
+router.patch("/update/:id",adminMiddleware('eventManager'), EventController.updateEvent);
 router.delete("/:id", adminMiddleware('eventManager'), EventController.deleteEvent);
 router.post("/generated-fighter-card/:id", adminMiddleware('eventManager'), EventController.generateFighterCard);
 

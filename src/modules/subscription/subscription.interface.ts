@@ -8,11 +8,12 @@ export type ISubscription = {
   price: string;
   duration: string;
 
-  feature: {
-    subscription_date: string;
-    subscription_end_date: string;
-    subscription_status: string;
-    subscription_details: string;
-  };
+  feature: [
+    "Unlimited Product updates",
+    "Unlimited Product updates",
+    "Unlimited Product updates",
+    "demo reminders",
+    "Email and community support"
+  ],
   isDeleted: boolean;
 } & Document;

@@ -152,9 +152,10 @@ export const deletePromoCode = catchAsync(
 
 export const restorePromoCode = catchAsync(
   async (req: Request, res: Response) => {
-    const id = req.query?.id as string;
-
+    // const id = req.query?.id as string;
+     const {id}= req.body;
     const promoCode = await findPromoCodeById(id);
+    // console.log(id)
 
     if (!promoCode) {
       return sendError(res, httpStatus.NOT_FOUND, {
@@ -281,7 +282,7 @@ export const usePromoCode = catchAsync(async (req: Request, res: Response) => {
     id: string;
   };
   const userId = decoded.id;
-
+  
   // Find the user by userId
   const user = await findUserById(userId);
 
@@ -292,7 +293,7 @@ export const usePromoCode = catchAsync(async (req: Request, res: Response) => {
   }
 
   const { cuponCode } = req.body;
-
+  
   // Check if the promo code exists in the database
   const existingPromoCode = await PromoCodeModel.findOne({ code: cuponCode });
 

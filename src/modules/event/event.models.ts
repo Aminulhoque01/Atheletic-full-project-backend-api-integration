@@ -4,8 +4,9 @@ import uuidv4 from "uuid";
 
 const EventSchema = new Schema<IEvent, EventModel>(
   {
-    eventID: { type: String, default: uuidv4, unique: true },
-    eventName: { type: String, required: true },
+    eventID: { type: String, unique: true },
+    managerId: { type: Schema.Types.ObjectId, ref: "EventManager",  },
+    eventName: { type: String, required: true  },
     eventCategories: { type: [String], required: true },
     title: { type: String, required: true },
     eligibilityCriteria: {
@@ -31,7 +32,7 @@ const EventSchema = new Schema<IEvent, EventModel>(
     tier: {
       type: String,
       enum: ["basic", "advanced"],
-      required: true,
+      // required: true,
     },
     eventType: { type: String, required: true },
     eventLocation: { type: String, required: true },
@@ -46,11 +47,23 @@ const EventSchema = new Schema<IEvent, EventModel>(
     eventDescription: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+     
+    
   },
   { timestamps: true }
 );
 
+EventSchema.pre("save", function (next) {
+  if (!this.eventID) {
+    // Generate a custom eventID (e.g., based on timestamp + unique ID)
+    this.eventID = `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+  next();
+});
+
 export const Event = model<IEvent, EventModel>("Event", EventSchema);
+
+
 
 // // Add Methods
 // EventSchema.methods.registerAthlete = function (athlete: string): void {

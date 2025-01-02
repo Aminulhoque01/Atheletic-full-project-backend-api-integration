@@ -1,3 +1,4 @@
+// import { getAllEventManager } from './user.controller';
 import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
@@ -5,6 +6,7 @@ import nodemailer from "nodemailer";
 import { IUser, IPendingUser } from "./user.interface";
 
 import { OTPModel, PendingUserModel, UserModel } from "./user.model";
+
 import {
   JWT_SECRET_KEY,
   Nodemailer_GMAIL,
@@ -16,7 +18,7 @@ export const createUser = async ({
   lastName,
   email,
   hashedPassword,
-  
+  fcmToken,
   weight,
   sport,
   gym,
@@ -32,14 +34,13 @@ export const createUser = async ({
   location,
   role,
   interests,
-
 }: {
   firstName: string;
   lastName: string;
-  role:string;
+  role: string;
   email: string;
   hashedPassword: string;
-  
+  fcmToken: string;
   weight: number;
   sport: string;
   gym: string;
@@ -54,12 +55,12 @@ export const createUser = async ({
   phoneNumber: string;
   gender: string;
   interests: string[];
-
 }): Promise<{ createdUser: IUser }> => {
   const createdUser = await UserModel.create({
     firstName,
     lastName,
     email,
+    fcmToken,
     password: hashedPassword,
     company_Name,
     website,
@@ -68,7 +69,6 @@ export const createUser = async ({
     owner_lastName,
     phoneNumber,
     gender,
-    
     weight,
     sport,
     gym,
@@ -77,7 +77,6 @@ export const createUser = async ({
     location,
     role,
     interests,
-
   });
   return { createdUser };
 };
@@ -92,7 +91,7 @@ export const findUserById = async (id: string): Promise<IUser | null> => {
 
 export const updateUserById = async (
   id: string,
-  updateData: Partial<IUser>,
+  updateData: Partial<IUser>
 ): Promise<IUser | null> => {
   return UserModel.findByIdAndUpdate(id, updateData, { new: true });
 };
@@ -103,8 +102,7 @@ export const getUserList = async (
   limit: number,
   date?: string,
   name?: string,
-  email?: string,
-  
+  email?: string
 ): Promise<{ users: IUser[]; totalUsers: number; totalPages: number }> => {
   //const query: any = { isDeleted: { $ne: true } }
   //const query: any = { _id: { $ne: adminId } };
@@ -153,7 +151,7 @@ export const saveOTP = async (email: string, otp: string): Promise<void> => {
   await OTPModel.findOneAndUpdate(
     { email },
     { otp, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
-    { upsert: true, new: true },
+    { upsert: true, new: true }
   );
 };
 
@@ -163,7 +161,7 @@ export const getStoredOTP = async (email: string): Promise<string | null> => {
 };
 
 export const getUserRegistrationDetails = async (
-  email: string,
+  email: string
 ): Promise<IPendingUser | null> => {
   return PendingUserModel.findOne({ email });
 };
@@ -179,7 +177,7 @@ export const generateToken = (payload: any): string => {
 
 export const sendOTPEmail = async (
   email: string,
-  otp: string,
+  otp: string
 ): Promise<void> => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -222,14 +220,14 @@ export const sendOTPEmail = async (
 
 export const verifyPassword = async (
   inputPassword: string,
-  storedPassword: string,
+  storedPassword: string
 ): Promise<boolean> => {
   return bcrypt.compare(inputPassword, storedPassword);
 };
 
 export const changeUserRole = async (
   userId: string,
-  newRole: "admin" | "user",
+  newRole: "admin" | "user"
 ): Promise<IUser | null> => {
   return UserModel.findByIdAndUpdate(userId, { role: newRole }, { new: true });
 };
@@ -237,3 +235,44 @@ export const changeUserRole = async (
 export const userDelete = async (id: string): Promise<void> => {
   await UserModel.findByIdAndUpdate(id, { isDeleted: true });
 };
+
+export const getAllFighters = async () => {
+  const fighters = await UserModel.find({ role: "fighter", isDeleted: false });
+  return fighters;
+};
+export const getAllEventManagers = async () => {
+  const eventManager = await UserModel.find({
+    role: "eventManager",
+    isDeleted: false,
+  });
+  return eventManager;
+};
+
+export const recentFighterUsers = async (limit = 10) => {
+  const recentFighters = await UserModel.find({ role: "fighter", isDeleted: false })
+    .sort({ createdAt: -1 }) // Sort by createdAt in descending order
+    .limit(limit); // Limit the number of results
+  return recentFighters;
+};
+
+
+export const getEventManagerEarnings = async (managerId: string): Promise<number> => {
+  const eventManager = await UserModel.findById(managerId);
+
+  if (!eventManager) {
+    throw new Error("Event Manager not found");
+  }
+
+  // Return the total earnings
+  return eventManager.earnings || 0;
+}
+
+// export const getAllEarnings= async () => {
+//   const user = await UserModel.find().select("earnings");
+//     // if (!user) throw new Error("User not found");
+
+//     const totalEarnings = user.reduce((sum: any, record: { amount: any; }) => sum + record.amount, 0);
+//     return totalEarnings;
+// }
+
+

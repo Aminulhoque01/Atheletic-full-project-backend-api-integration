@@ -17,14 +17,14 @@ import { UserModel } from "../user/user.model";
 import { PromoCodeModel } from "../promoCode/promoCode.model";
 
 export const createSubscription = catchAsync(async (req: Request, res: Response) => {
-    const { name, price, duration } = req.body;
+    const { name, price, duration,feature } = req.body;
 
     // Validate if duration and price are numbers
-    // if (isNaN(Number(duration))) {
-    //   return sendError(res, httpStatus.BAD_REQUEST, {
-    //     message: "Give only a number of how many months you want",
-    //   });
-    // }
+    if (isNaN(Number(duration))) {
+      return sendError(res, httpStatus.BAD_REQUEST, {
+        message: "Give only a number of how many months you want",
+      });
+    }
     if (isNaN(Number(price))) {
       return sendError(res, httpStatus.BAD_REQUEST, {
         message: "Give correct price",
@@ -32,24 +32,25 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
     }
 
     // Check for existing subscription based on the language-specific name
-    const existingSubscription = await SubscriptionModel.findOne({
-      $or: [
-        // Case-insensitive search for English name
-        { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive search for Spanish name
-      ],
-    });
+    // const existingSubscription = await SubscriptionModel.findOne({
+    //   $or: [
+    //     // Case-insensitive search for English name
+    //     { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive search for Spanish name
+    //   ],
+    // });
 
-    if (existingSubscription) {
-      return sendError(res, httpStatus.BAD_REQUEST, {
-        message: "Subscription with this name already exists",
-      });
-    }
+    // if (existingSubscription) {
+    //   return sendError(res, httpStatus.BAD_REQUEST, {
+    //     message: "Subscription with this name already exists",
+    //   });
+    // }
 
     // Create the subscription
     const subscription = await SubscriptionModel.create({
       name, // Save the localized name
       price,
       duration,
+      feature,
     });
 
     sendResponse(res, {
@@ -108,18 +109,18 @@ export const getSubscription = catchAsync(
 
 export const updateSubscription = catchAsync(
   async (req: Request, res: Response) => {
-    const id = req.query?.id as string;
+    // const id = req.query?.id as string;
 
-    const { name, price, duration } = req.body;
+    const {id, name, price, duration } = req.body;
 
     // Validate if duration is a number
-    // if (duration) {
-    //   if (isNaN(Number(duration))) {
-    //     return sendError(res, httpStatus.BAD_REQUEST, {
-    //       message: "Give only a number of how many months you want",
-    //     });
-    //   }
-    // }
+    if (duration) {
+      if (isNaN(Number(duration))) {
+        return sendError(res, httpStatus.BAD_REQUEST, {
+          message: "Give only a number of how many months you want",
+        });
+      }
+    }
 
     // Validate if price is a number
     if (price) {

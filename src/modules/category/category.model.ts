@@ -17,7 +17,7 @@ const CategorySchema= new Schema<ICategory>({
           path: "public\\images\\user.png",
         },
       },
-    category_name: { type: String },
+      categoryName: { type: String },
     // userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
    
 }, { timestamps: true });
