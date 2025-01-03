@@ -6,54 +6,44 @@
     "auditLog": "D:\\ATHLETIC-PROJECT\\winston\\error\\.20d529f1ab30340cefef53b574882d27f5ef58f4-audit.json",
     "files": [
         {
-            "date": 1735722697268,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-15-error.log",
-            "hash": "bad24704cbca00aac3ee3b1f0399649753aaaea4d8e29841a33f0c761dab4563"
+            "date": 1735815730334,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-17-error.log",
+            "hash": "0cf8e7cae1950f3c7662ffdcfe0ef1e59bc3490d9212e396c4d34ed432fa895d"
         },
         {
-            "date": 1735725763825,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-16-error.log",
-            "hash": "1bfdf5d7c3803a6fc08b114bbdfe383697a4df101538e8eb6872396c258ebff0"
+            "date": 1735820962817,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-18-error.log",
+            "hash": "016778260d04cf6c063ca5c63a50b0f542897bbc4bd17e7afbbf7c29872f8fff"
         },
         {
-            "date": 1735729444316,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-17-error.log",
-            "hash": "056fe3f7b452edf0de98409398912def0bfadd7f7946d0709ec81df457c674c9"
+            "date": 1735874388748,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-09-error.log",
+            "hash": "82235c26b93d85d1dde6a82806eb4b9b8ccbaecfa9659d0cdc93943db158b6f1"
         },
         {
-            "date": 1735733017089,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\01-01-2025-18-error.log",
-            "hash": "081ca87b879a12f051bbebf62c8b56160738872f549b05dbbc7e35d18ec9c465"
+            "date": 1735877008639,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-10-error.log",
+            "hash": "6feebfbd267632615c62d0b8bfcef6756b933eaa35dc74edb693e815206ec234"
         },
         {
-            "date": 1735789289560,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-09-error.log",
-            "hash": "b6c69e736073497859c006dae035978e3fc353747448f86e3ee22b6b3684ba20"
+            "date": 1735881636386,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-11-error.log",
+            "hash": "49afb9b27719fb613e1782b4457fc54cd899ee98d860a7ceecedde3dc8cf3fea"
         },
         {
-            "date": 1735790628650,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-10-error.log",
-            "hash": "eb70382dda42af564c92b16e2c69e01036ed9ebf241e3cfdface13fd660ee6eb"
+            "date": 1735893744285,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-14-error.log",
+            "hash": "700e3d6f0cb527f9eb129de66d43e675cda825a09a062ae631bc8fa8d00a160e"
         },
         {
-            "date": 1735794037236,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-11-error.log",
-            "hash": "0820bf4ad495d5006f0514de4323d06d325029fa84bb2bf69b6abeeaf4e9ed7e"
+            "date": 1735896363390,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-15-error.log",
+            "hash": "8fecd84e663a5261d3570f545ad0b8c98cf2ba95dbde787b6c48e1c289dd00fa"
         },
         {
-            "date": 1735800213045,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-12-error.log",
-            "hash": "94228ac3b77211a125f34d3db7dee85fc1225810b4aff46ee6ce130be5b20fb4"
-        },
-        {
-            "date": 1735801426211,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-13-error.log",
-            "hash": "3baff7848fc26d28bc90076051dcb5cd040f56947ff3323b8bc3dc22c2231483"
-        },
-        {
-            "date": 1735808914553,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\02-01-2025-15-error.log",
-            "hash": "adf6764c121cb6226328846fb52322bd0256889817f37a7683ea7d80a7a20713"
+            "date": 1735899922075,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\error\\03-01-2025-16-error.log",
+            "hash": "477c97e1f3ad628b767f182d31769d2af0dc8c1f674f8865fe76fdeda1563175"
         }
     ],
     "hashType": "sha256"

@@ -12,6 +12,7 @@ import { UserModel } from "../user/user.model";
 import { error } from "winston";
 import { CategoryModel } from "./category.model";
 import sendError from "../../utils/sendError";
+import { Event } from "../event/event.models";
 
 
 const createCategory = catchAsync(
@@ -35,9 +36,26 @@ const createCategory = catchAsync(
 
 
 
+
 const updateCategory = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const { interests } = req.body;
-  
+  let { interests } = req.body;
+
+  // console.log(`Request Body:`, req.body);
+  // console.log(`Interests (Before Parsing):`, interests);
+
+  // Parse interests if it is a string
+  if (typeof interests === 'string') {
+    try {
+      interests = JSON.parse(interests);
+    } catch (error) {
+      return sendError(res, httpStatus.BAD_REQUEST, { message: "Invalid interests format." });
+    }
+  }
+
+  console.log(`Interests (After Parsing):`, interests);
+
+  req.body.interests = interests; // Update the parsed interests back to req.body
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -47,42 +65,36 @@ const updateCategory = catchAsync(async (req: Request, res: Response): Promise<v
   }
 
   const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as {
-    id: string;
-  };
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
   const userId = decoded.id;
 
-
   if (!userId) {
-    res.status(401).json({ error: "User not authenticated" });
-    return;
+    return sendError(res, httpStatus.UNAUTHORIZED, { message: "User not authenticated." });
   }
-
-
 
   if (!interests || !Array.isArray(interests)) {
-    return sendError(res, httpStatus.BAD_REQUEST, {
-      message: "Invalid interests array provided.",
-    });
+    return sendError(res, httpStatus.BAD_REQUEST, { message: "Invalid interests array provided." });
   }
 
-  const result = await UserModel.findByIdAndUpdate(
+  // Update user interests
+  const updatedUser = await UserModel.findByIdAndUpdate(
     userId,
     { $set: { interests } },
-    { new: true } // Return the updated document
-  )
+    { new: true }
+  ).populate("interests");
 
-  if (!result) {
-    throw new Error("Failed to update category!");
+  if (!updatedUser) {
+    return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, { message: "Failed to update interests." });
   }
 
-  const user = await UserModel.findById(userId).populate("interests");
+  // Find events matching updated interests
+  const matchingEvents = await Event.find({ category: { $in: interests } });
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Category updated successfully",
-    data: user, // Include populated user data
+    message: "Category updated successfully.",
+    data: { user: updatedUser, events: matchingEvents },
   });
 });
 

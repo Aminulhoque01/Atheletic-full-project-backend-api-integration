@@ -1,7 +1,0 @@
-Wed Jan 01 2025 15:15:24 [SERVER-NAME] error: globalErrorHandler ~ Fighter is already registered for this event
-Wed Jan 01 2025 15:34:9 [SERVER-NAME] error: globalErrorHandler ~ Fighter is already registered for this event
-Wed Jan 01 2025 15:35:22 [SERVER-NAME] error: globalErrorHandler ~ server_1.io.emit is not a function
-Wed Jan 01 2025 15:38:22 [SERVER-NAME] error: globalErrorHandler ~ Fighter is already registered for this event
-Wed Jan 01 2025 15:38:49 [SERVER-NAME] error: globalErrorHandler ~ Fighter is already registered for this event
-Wed Jan 01 2025 15:38:52 [SERVER-NAME] error: globalErrorHandler ~ Fighter is already registered for this event
-Wed Jan 01 2025 15:39:22 [SERVER-NAME] error: globalErrorHandler ~ Fighter not found

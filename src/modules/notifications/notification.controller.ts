@@ -149,8 +149,8 @@ const createNotification = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getNotification = catchAsync(async (req: Request, res: Response) => {
-  const { recipientType, recipientId } = req.query;
-      const notifications = await notificationService.getNotification(recipientType as string, recipientId as string);
+  // const { recipientType, recipientId } = req.query;
+      const notifications = await notificationService.getNotification();
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

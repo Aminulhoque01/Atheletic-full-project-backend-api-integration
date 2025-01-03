@@ -47,7 +47,7 @@ const EventSchema = new Schema<IEvent, EventModel>(
     eventDescription: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-     
+    id: { type: Schema.Types.ObjectId,  },
     
   },
   { timestamps: true }
@@ -55,11 +55,18 @@ const EventSchema = new Schema<IEvent, EventModel>(
 
 EventSchema.pre("save", function (next) {
   if (!this.eventID) {
-    // Generate a custom eventID (e.g., based on timestamp + unique ID)
-    this.eventID = `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    this.eventID = this._id.toString();
   }
   next();
 });
+
+// EventSchema.pre("save", function (next) {
+//   if (!this.eventID) {
+//     // Generate a custom eventID (e.g., based on timestamp + unique ID)
+//     this.eventID = `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+//   }
+//   next();
+// });
 
 export const Event = model<IEvent, EventModel>("Event", EventSchema);
 

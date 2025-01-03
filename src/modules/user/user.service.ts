@@ -40,7 +40,7 @@ export const createUser = async ({
   role: string;
   email: string;
   hashedPassword: string;
-  fcmToken: string;
+  fcmToken?: string;
   weight: number;
   sport: string;
   gym: string;
@@ -81,8 +81,15 @@ export const createUser = async ({
   return { createdUser };
 };
 
-export const findUserByEmail = async (email: string): Promise<IUser | null> => {
-  return UserModel.findOne({ email });
+export const findUserByEmail = async (email: string,fcmToken?:string): Promise<IUser | null> => {
+  const user= await UserModel.findOne({ email });
+
+  if (user && fcmToken) {
+    user.fcmToken = fcmToken; // Update the fcmToken if provided
+    await user.save(); // Save changes to the database
+  }
+
+  return user;
 };
 
 export const findUserById = async (id: string): Promise<IUser | null> => {
@@ -187,7 +194,7 @@ export const sendOTPEmail = async (
       pass: Nodemailer_GMAIL_PASSWORD,
     },
   });
-
+  
   // English and Spanish email content based on the lang parameter
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f0f0f0; padding: 20px;">

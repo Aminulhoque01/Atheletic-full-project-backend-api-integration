@@ -6,54 +6,44 @@
     "auditLog": "D:\\ATHLETIC-PROJECT\\winston\\success\\.57c5e22fccb45a10bc3b5425130c0ab863bab068-audit.json",
     "files": [
         {
-            "date": 1735722697266,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\01-01-2025-15-success.log",
-            "hash": "2bdcd2e57794f7252bf0449ead9cc063c9d499d0eabe17b076ce15315cc410e0"
+            "date": 1735815730332,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-17-success.log",
+            "hash": "53689d57d2fb313c66e8a62e8cd4ce342f09ac40fe954f56d0a21395884aba87"
         },
         {
-            "date": 1735725763823,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\01-01-2025-16-success.log",
-            "hash": "3d4e1364c1bde93793931999ae4efabcaebb282812fa8f9b23167a155ee5b45d"
+            "date": 1735820962814,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-18-success.log",
+            "hash": "bffdcf4d6ab12da589d611489604b058c9112aeda7a6540ebea9266f903f2f6c"
         },
         {
-            "date": 1735729444314,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\01-01-2025-17-success.log",
-            "hash": "97a22c18441d493cbe29a6f035e8d6113566f2ccc19ea7905d078dc79f493a9b"
+            "date": 1735874388745,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-09-success.log",
+            "hash": "14c9c52d66b59fe8383ed90fed0cac4eb6beda149ae6ca8c06b9372624429fd5"
         },
         {
-            "date": 1735733017084,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\01-01-2025-18-success.log",
-            "hash": "ceaa6fa853da3c4e1c373c8fe7407f5a8733a71c9a9ed32049977bd4cde9fe3c"
+            "date": 1735877008637,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-10-success.log",
+            "hash": "50734bf1693703b59f15ab18806cebc02d97e74083c12642e58c8350b94805ac"
         },
         {
-            "date": 1735789289558,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-09-success.log",
-            "hash": "da49bee40780339b1d8857b2db168c726a184af0fc4913664788d7eb5c4a1deb"
+            "date": 1735881636383,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-11-success.log",
+            "hash": "19ecd39b18e950a88412edd0f871e27f878791a4ce11c9fc2fe281dda157c63c"
         },
         {
-            "date": 1735790628648,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-10-success.log",
-            "hash": "c48c227b02c64ded98e754b5f0e8196a081c74fc712dad52bbb9886b26646787"
+            "date": 1735893744272,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-14-success.log",
+            "hash": "8a15bbb515dfa93c8c547e0de5402262e156c30d59a0d485d0c1402d530b4636"
         },
         {
-            "date": 1735794037234,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-11-success.log",
-            "hash": "ec7f6ac295a50f8827848759412f8e2fb4501423c4e2393ff461b24759bccca2"
+            "date": 1735896363384,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-15-success.log",
+            "hash": "031be822e497051c6ffdc3a4dbb410e1f7df2fe0811f9690e0bd56deb983b27c"
         },
         {
-            "date": 1735800213041,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-12-success.log",
-            "hash": "42f6a0d458a50a7be05878c549fd6fcd221379140efd873402d3983b0e31ed12"
-        },
-        {
-            "date": 1735801426195,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-13-success.log",
-            "hash": "3eb57393245372633858dba177c4f6d5137ed3dfaba68d2c2568b9f0acdcd059"
-        },
-        {
-            "date": 1735808914551,
-            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\02-01-2025-15-success.log",
-            "hash": "b1d6a727ba9abd72b565ccbae666ac5e359c4dfa11e40bde2500b1ed169c9bd6"
+            "date": 1735899922072,
+            "name": "D:\\ATHLETIC-PROJECT\\winston\\success\\03-01-2025-16-success.log",
+            "hash": "812b16b6e956d69907fba4fe56cd8de60db97fb6aac0349a6c83323bf68a853c"
         }
     ],
     "hashType": "sha256"

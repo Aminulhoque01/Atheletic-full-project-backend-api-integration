@@ -25,9 +25,13 @@ import { INotification } from "./notification.interface";
 const NotificationSchema = new Schema<INotification>({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
-  recipientType: { type: String, enum: ['EventManager', 'Fighter', 'Admin'], required: true },
-  recipientId: { type: mongoose.Schema.Types.ObjectId, required: true, refPath: 'recipientType' },
   message: { type: String, required: true },
+  
+
+  type: { type: String, required: true },
+  role: { type: String, required: true },
+  sendBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
   read: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });

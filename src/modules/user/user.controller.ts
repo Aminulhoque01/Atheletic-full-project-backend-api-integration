@@ -1,6 +1,7 @@
 import { getAllEventManagers, getEventManagerEarnings } from './user.service';
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
@@ -161,7 +162,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       lastName,
       email,
       password,
-
+      fcmToken,
       weight,
       sport,
       dateOfBirth,
@@ -243,7 +244,13 @@ export const resendOTP = catchAsync(async (req: Request, res: Response) => {
 export const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { email, password,fcmToken, } = req.body;
 
-  const user = await findUserByEmail(email);
+  const user = await findUserByEmail(email,fcmToken);
+
+  // if (!fcmToken) {
+  //   return sendError(res, httpStatus.BAD_REQUEST, {
+  //     message: "Please provide fcmToken.",
+  //   });
+  // }
 
   if (!user) {
     return sendError(res, httpStatus.NOT_FOUND, {
@@ -304,6 +311,7 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        fcmToken: user.fcmToken,
         image: user?.image,
         age: user?.age,
         gender: user?.gender,
@@ -444,7 +452,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
-  const { otp, email, fcmToken } = req.body;
+  const { otp, email, } = req.body;
   // console.log("Step 1: Received OTP verification request", { otp, email });
 
   try {
@@ -488,6 +496,8 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       phoneNumber,
       gender,
       role,
+       
+      
     } = userDetails;
 
     // console.log("Step 4: Hashing password");
@@ -496,7 +506,6 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     // console.log("Step 5: Creating user");
     const { createdUser } = await createUser({
       firstName,
-      fcmToken,
       lastName,
       email,
       hashedPassword,
@@ -514,7 +523,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       fightRecord,
       location,
       role,
-      
+       
       interests: [],
     });
 
@@ -527,16 +536,19 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
 
     // console.log("Step 7: Emitting notification");
     const userMsg = "Welcome to LikeMine_App.";
-    const adminMsg = `${firstName} has successfully registered.`;
-    await sendNotification({
-      title: "Welcome",
-      message: userMsg,
-      recipientType: "user",
-      recipientId: createdUser._id as string,
-      userId: createdUser._id as string,
-      userMsg,
-      adminMsg,
-    });
+    // await sendNotification({
+    //   title: "Welcome",
+    //   message: userMsg,
+    //   // recipientType: "user",
+    //   // recipientId: createdUser._id as string,
+    //   userId: createdUser._id as ObjectId,
+    //   userMsg,
+      
+    //   role: createdUser.role,
+    //   type: "registration",
+    //   sendBy: createdUser._id as ObjectId,
+    // });
+   
 
     // console.log("Step 8: Sending success response");
     sendResponse(res, {
@@ -547,7 +559,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error during OTP verification:", err);
-    return sendError(res, httpStatus.OK, {
+    return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, {
       message: "An error occurred during OTP verification.",
       
     });

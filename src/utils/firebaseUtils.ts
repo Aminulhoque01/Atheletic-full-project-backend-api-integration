@@ -45,14 +45,14 @@ const admin = require("firebase-admin");
 
 admin.initializeApp({
   credential: admin.credential.cert({
-    apiKey: process.env.Keyid,
-    authDomain: process.env.AuthDomain,
-    projectId: process.env.ProjectId,
-    storageBucket: process.env.StorageBucket,
-    messagingSenderId: process.env.MessagingSenderId,
-    appId: process.env.AppId,
-    measurementId: process.env.MeasurementId,
-    vapidKey: process.env.VapidKey,
+    // apiKey: process.env.Keyid,
+    // authDomain: process.env.AuthDomain,
+    // projectId: process.env.ProjectId,
+    // storageBucket: process.env.StorageBucket,
+    // messagingSenderId: process.env.MessagingSenderId,
+    // appId: process.env.AppId,
+    // measurementId: process.env.MeasurementId,
+    // vapidKey: process.env.VapidKey,
   }),
 });
 

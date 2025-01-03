@@ -73,7 +73,7 @@ export type IUser = {
   expiryDate: Date | null;
   activeDate: Date | null;
   isDeleted: boolean;
-  fcmToken: string;
+  fcmToken?: string;
   events: [string]
  
 } & Document;

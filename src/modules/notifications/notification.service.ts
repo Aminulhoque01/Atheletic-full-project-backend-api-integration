@@ -10,8 +10,8 @@ const createNotification = async(
     return await notification.save();
 }
 
-const getNotification = async(recipientType: string, recipientId: string): Promise<INotification[]> => {
-    return await Notification.find({ recipientType, recipientId }).sort({ createdAt: -1 }).exec();
+const getNotification = async(): Promise<INotification[]> => {
+    return await Notification.find().sort({ createdAt: -1 }).exec();
 }
 
 export const notificationService = {

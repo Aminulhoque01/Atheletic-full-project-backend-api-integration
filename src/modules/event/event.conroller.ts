@@ -1,3 +1,4 @@
+import { object } from 'zod';
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { EventFilterableFields } from "./event.constant";
@@ -11,7 +12,7 @@ import { paginationFields } from "../../shared/constrant";
 import { Error } from "mongoose";
 
 import sendError from "../../utils/sendError";
-import { JWT_SECRET_KEY } from '../../config';
+import { JWT_SECRET_KEY } from "../../config";
 import { Event } from "./event.models";
 import { UserModel } from "../user/user.model";
 
@@ -19,7 +20,6 @@ export const createEvent: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { ...otherEventData } = req.body;
 
-  
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -33,34 +33,33 @@ export const createEvent: RequestHandler = catchAsync(
       id: string;
     };
     const managerId = decoded.id;
-    console.log(managerId)
+    console.log(managerId);
 
     if (!managerId) {
       res.status(401).json({ error: "User not authenticated" });
       return;
     }
 
-
-
     const managerid = await Event.findByIdAndUpdate(
       managerId,
       { $set: { managerId } },
       { new: true } // Return the updated document
     ).populate("managerId");
-    
 
-    const result = await EventService.createEvent(otherEventData);
+    const result = (await EventService.createEvent(
+      otherEventData
+    )) as unknown as IEvent & { _id: string };
 
     if (!result) {
       throw new Error("Failed to create event"); // Ensure null is handled explicitly
     }
 
+    // Transform the result to include eventId explicitly
     const transformedResult = {
       ...result.toObject(),
-      eventId: result._id,
-      managerId: managerid?.managerId,
+      eventId: result._id.toString(),
     };
-
+    // console.log(transformedResult)
     sendResponse<IEvent>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -70,13 +69,15 @@ export const createEvent: RequestHandler = catchAsync(
   }
 );
 
-
-
-
 const getAllEvent: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const filters = pick(req.query, EventFilterableFields);
-    const paginationOptions = pick(req.query, paginationFields);
+    
+    const paginationOptions = {
+      page: parseInt(req.query.page as string, 10) || 1,
+      limit: parseInt(req.query.limit as string, 10) || 10,
+      ...pick(req.query, paginationFields),
+    };
 
     const result = await EventService.getAllEvent(filters, paginationOptions);
 
@@ -118,9 +119,7 @@ const updateEvent: RequestHandler = catchAsync(
     const id = req.params.id;
     const updateData = req.body;
 
-    
-
-    const result = await EventService.eventUpdate(id, updateData);;
+    const result = await EventService.eventUpdate(id, updateData);
 
     if (!result) {
       return sendResponse<IEvent | null>(res, {

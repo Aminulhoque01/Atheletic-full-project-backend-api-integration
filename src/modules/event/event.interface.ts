@@ -1,7 +1,7 @@
-import { Model } from "mongoose";
+import { Model, Schema } from "mongoose";
 
 export interface IEvent {
-  _id: string;
+  id: Schema.Types.ObjectId;
   eventID: string;
   managerId: object;
   title: string;
@@ -54,5 +54,6 @@ export type IEventFilters = {
   eventTitleName?: number;
   eventName?: string;
   eventDate?: Date;
+  eventType?: string;
   eventLocation?: string;
 };

@@ -16,40 +16,40 @@ const getAllEvent = async (
   filters: IEventFilters,
   pagination: IpaginationsOptions
 ): Promise<IGeneticResponse<IEvent[]>> => {
-  const { searchTerm, ...filtersData } = filters;
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(pagination);
+  const { searchTerm, ...filterFields } = filters;
+  const { page, limit, sortBy, sortOrder } = pagination;
 
+  // Prepare conditions
   const andConditions = [];
 
+  // Add searchTerm condition
   if (searchTerm) {
     andConditions.push({
       $or: EventFilterableFields.map((field) => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: "i",
-        },
+        [field]: { $regex: searchTerm, $options: 'i' }, // Case-insensitive regex search
       })),
     });
   }
 
-  if (Object.keys(filtersData).length) {
+  // Add filter fields (e.g., eventDate, eventLocation)
+  if (Object.keys(filterFields).length > 0) {
     andConditions.push({
-      $and: Object.entries(filtersData).map(([field, value]) => ({
+      $and: Object.entries(filterFields).map(([field, value]) => ({
         [field]: value,
       })),
     });
   }
 
-  const sortConditions: { [key: string]: SortOrder } = {};
+  // Build final query conditions
+  const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
 
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder;
-  }
+  // Sort conditions
+  const sortConditions: { [key: string]: SortOrder } = sortBy ? { [sortBy]: sortOrder === 'asc' ? 1 : -1 } : {};
 
-  const whereConditions =
-    andConditions.length > 0 ? { $and: andConditions } : {};
+  // Pagination
+  const skip = (page - 1) * limit;
 
+  // Query database
   const result = await Event.find(whereConditions)
     .sort(sortConditions)
     .skip(skip)
@@ -58,14 +58,11 @@ const getAllEvent = async (
   const total = await Event.countDocuments(whereConditions);
 
   return {
-    meta: {
-      page,
-      limit,
-      total,
-    },
+    meta: { page, limit, total },
     data: result,
   };
 };
+
 
 const getSingleEvent = async (id: string): Promise<IEvent | null> => {
   const result = await Event.findById(id);

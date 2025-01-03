@@ -1,3 +1,4 @@
+
 // import { Document, Types } from "mongoose";
 
 import mongoose from "mongoose";
@@ -18,16 +19,19 @@ import mongoose from "mongoose";
 
 
 export type INotification ={
-  recipientType: 'EventManager' | 'Fighter' | 'Admin';
-  recipientId: mongoose.Types.ObjectId;
-  adminId?: string[];
+  // recipientType: 'EventManager' | 'Fighter' | 'Admin';
+  // recipientId: mongoose.Types.ObjectId;
+  // adminId?: string[];
 
-  adminMsg?: string;
+  // adminMsg?: string;
 
   userMsg?: string;
   title: string;
   userId?: string;
   message: string;
+  type:string
+  role:string;
+  sendBy: mongoose.Types.ObjectId;
   read: boolean;
   createdAt: Date;
 }
