@@ -18,7 +18,7 @@ export type IPendingUser = {
   gender: string;
   company_Name:string;
   website:string,
-  company_Address: string;
+  Address: string;
   company_Contact:string;
   owner_firstName:string;
   owner_lastName:string;
@@ -26,8 +26,14 @@ export type IPendingUser = {
   gym: string;
   fightRecord: object;
   location: string;
+  boxing_short_video?: string;
   disable: string;
-  role: "fighter" | "admin" | "eventManager";
+  // judgment
+  judgmentExperience?: number;
+  
+  judgmentCategory?: string;
+  experienceAwardDetails?: string;
+  role: "fighter" | "admin" | "eventManager" | "judgment";
 } & Document;
 
 export type IUser = {
@@ -57,6 +63,7 @@ export type IUser = {
   age: string;
   gender: string;
   fightRecord?: object;
+  boxing_short_video?:string;
   about: string;
   bio: string;
   earnings: number;
@@ -64,7 +71,7 @@ export type IUser = {
   // evemtManager
   company_Name:string;
   website:string,
- company_Address: string;
+  Address: string;
   company_Contact:string;
   owner_firstName:string;
   owner_lastName:string;
@@ -75,6 +82,12 @@ export type IUser = {
   isDeleted: boolean;
   fcmToken?: string;
   events: [string]
+
+  // judgment
+  judgmentExperience?: number;
+  
+  judgmentCategory?: string;
+  experienceAwardDetails?: string;
  
 } & Document;
 

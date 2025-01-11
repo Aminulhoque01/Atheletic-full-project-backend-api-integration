@@ -17,6 +17,8 @@ router.patch("/update/:id",adminMiddleware('eventManager'), EventController.upda
 router.delete("/:id", adminMiddleware('eventManager'), EventController.deleteEvent);
 router.post("/generated-fighter-card/:id", adminMiddleware('eventManager'), EventController.generateFighterCard);
 
+// router.post("/upload-scores", adminMiddleware('judgment'), EventController.uploadScores);
+
 
 
 

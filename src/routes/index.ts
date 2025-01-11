@@ -18,6 +18,7 @@ import { EventRequestRoutes } from "../modules/eventRequest/eventRequest.route";
 import { SupportRoutes } from "../modules/support/support.route";
 import { withdrawRouter } from "../modules/withdraw-request/withdraw.router";
 import { NotificationRoutes } from "../modules/notifications/notification.route";
+import { JudgmentRoutes } from "../modules/judgment/judgment.router";
 
 
 
@@ -71,6 +72,10 @@ const apiRoutes = [
   {
     path: "/terms",
     route: TermsRoutes,
+  },
+  {
+    path: "/judgment",
+    route: JudgmentRoutes,
   },
   {
     path: "/about",

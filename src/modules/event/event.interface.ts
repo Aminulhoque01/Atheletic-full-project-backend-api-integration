@@ -1,7 +1,9 @@
-import { Model, Schema } from "mongoose";
+import { Model, Schema, Types } from "mongoose";
 
 export interface IEvent {
   id: Schema.Types.ObjectId;
+  eventBanner:string,
+  eventLogo:string,
   eventID: string;
   managerId: object;
   title: string;
@@ -12,9 +14,11 @@ export interface IEvent {
   };
   isPaid: boolean;
   fightCards: {
+    _id: any;
     participant1: string;
     participant2: string;
     status: string;
+    score: number;
   }[];
   statistics: {
     registrations: number;
@@ -44,7 +48,7 @@ export interface IEvent {
   createdAt?: Date; // Optional created date
   updatedAt?: Date; // Optional updated date
    // Event price
- 
+   scores?: number[];
 }
 
 export type EventModel = Model<IEvent, Record<string, unknown>>;
@@ -57,3 +61,25 @@ export type IEventFilters = {
   eventType?: string;
   eventLocation?: string;
 };
+
+
+export interface IFightCard {
+  _id?: Schema.Types.ObjectId;
+
+  participant1?: string;
+
+  participant2?: string;
+
+  status?: string;
+
+  scores?: number[];
+
+  fightCards?: {
+
+    _id: Schema.Types.ObjectId;
+
+    status: string;
+    score: number
+
+  }[];
+}

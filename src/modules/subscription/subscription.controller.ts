@@ -32,18 +32,18 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
     }
 
     // Check for existing subscription based on the language-specific name
-    // const existingSubscription = await SubscriptionModel.findOne({
-    //   $or: [
-    //     // Case-insensitive search for English name
-    //     { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive search for Spanish name
-    //   ],
-    // });
+    const existingSubscription = await SubscriptionModel.findOne({
+      $or: [
+        // Case-insensitive search for English name
+        { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive search for Spanish name
+      ],
+    });
 
-    // if (existingSubscription) {
-    //   return sendError(res, httpStatus.BAD_REQUEST, {
-    //     message: "Subscription with this name already exists",
-    //   });
-    // }
+    if (existingSubscription) {
+      return sendError(res, httpStatus.BAD_REQUEST, {
+        message: "Subscription with this name already exists",
+      });
+    }
 
     // Create the subscription
     const subscription = await SubscriptionModel.create({
@@ -68,7 +68,7 @@ export const getSubscription = catchAsync(
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const { subscriptions, totalSubscriptions, totalPages } = await subscriptionList(page, limit);
+    const { subscriptions, totalSubscriptions, totalPages, } = await subscriptionList(page, limit);
 
     const prevPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
@@ -94,7 +94,8 @@ export const getSubscription = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       message: "Subscriptions retrieved successfully",
-      data: subscriptions,
+      data:  subscriptions,
+     
       pagination: {
         totalPage: totalPages,
         currentPage: page,
@@ -102,8 +103,11 @@ export const getSubscription = catchAsync(
         nextPage: nextPage ?? 1,
         limit,
         totalItem: totalSubscriptions,
+        
       },
+      
     });
+    
   },
 );
 

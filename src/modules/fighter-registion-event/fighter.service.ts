@@ -105,8 +105,9 @@ const createFighter = async (payload: IFighter): Promise<IFighter | null> => {
   
 };
 
-const getEventRegister = async () => {
-  const result = await UserModel.find({ isRegistered: true, isProUser: true });
+const getEventRegister = async ( ) => {
+
+  const result = await UserModel.find({isRegistered: true, isProUser: true });
   return result;
 }
 

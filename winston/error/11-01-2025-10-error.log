@@ -1,0 +1,2 @@
+Sat Jan 11 2025 10:9:9 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: tier: `primum` is not a valid enum value for path `tier`.
+Sat Jan 11 2025 10:9:46 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: tier: `Advance` is not a valid enum value for path `tier`.

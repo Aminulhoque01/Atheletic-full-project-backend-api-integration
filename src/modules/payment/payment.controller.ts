@@ -218,11 +218,11 @@ export const paymentCreate = catchAsync(async (req: Request, res: Response) => {
     await sendNotification({
       title: "Subscription Purchase",
       message: `You successfully purchased the subscription! It is valid until ${formattedExpiryDate}.`,
-      recipientType: "user",
-      recipientId: user._id,
       userId: user._id,
       userMsg: `You successfully purchased the subscription! It is valid until ${formattedExpiryDate}.`,
-      adminMsg: `${user.firstName} purchased a subscription with the transaction ID: "${transactionId}".`,
+      role: user.role,
+      type: "subscription",
+      sendBy: user._id,
     });
 
     // Send success response with the formatted expiry date
@@ -244,84 +244,155 @@ export const paymentCreate = catchAsync(async (req: Request, res: Response) => {
   }
 });
 
-export const getAllPayment = catchAsync(async (req: Request, res: Response) => {
-  const page = parseInt(req.query.page as string, 10) || 1;
-  const limit = parseInt(req.query.limit as string, 10) || 10;
 
-  // const name = req.query.name as string;
-  const date = req.query.date as string;
-  const subscriptionName = req.query.subscriptionName as string;
-  const userId = req.query._id as string;
-  const userName = req.query.firstName as string;
-  const userEmail = req.query.email as string;
- 
+
+// export const getAllPayment = catchAsync(async (req: Request, res: Response) => {
+//   const page = parseInt(req.query.page as string, 10) || 1;
+//   const limit = parseInt(req.query.limit as string, 10) || 10;
+
+//   // const name = req.query.name as string;
+//   const date = req.query.date as string;
+//   const subscriptionName = req.query.subscriptionName as string;
+//   const userId = req.query._id as string;
+//   const userName = req.query.firstName as string;
+//   const userEmail = req.query.email as string;
+//  const location = req.query.location as string;
   
-  const result = await getAllPaymentFromDB(
-    page,
-    limit,
-    userEmail,
-    date,
-    subscriptionName,
-    userId,
-    userName,
+//   const result = await getAllPaymentFromDB(
+//     page,
+//     limit,
+//     userEmail,
+//     date,
+//     subscriptionName,
+//     userId,
+//     userName,
+//     location,
 
-  );
+//   );
 
-  if (result.data.length === 0) {
+//   if (result.data.length === 0) {
+//     return sendResponse(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: "No purchased history",
+//       data: {
+//         payments: {},  //[]
+//       },
+//       pagination: {
+//         totalPage: Math.ceil(result.total / limit),
+//         currentPage: page,
+//         prevPage: page > 1 ? page - 1 : 1,
+//         nextPage: result.data.length === limit ? page + 1 : page,
+//         limit,
+//         totalItem: result.total,
+//       },
+//     });
+//   }
+//   //console.log(result.data,"finding date")
+//   const formattedPayments = result.data.map((payment: any) => ({
+//     transactionId: payment.transactionId,
+//     amount: payment.amount,
+//     userName: payment.userName,
+//     userEmail: payment.email,
+//     userId: payment._id,
+//     address:payment.location,
+//     subscriptionName: payment.subscriptionName,
+//     date: format(new Date(payment.createdAt), "do MMMM, yyyy"), // Format the date using date-fns
+//   }));
+
+
+
+//   return sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "Payments retrieved successfully.",
+//     data: {
+//       payments: formattedPayments,
+//     },
+//     pagination: {
+//       totalPage: Math.ceil(result.total / limit),
+//       currentPage: page,
+//       prevPage: page > 1 ? page - 1 : 1,
+//       nextPage: result.data.length === limit ? page + 1 : page,
+//       limit,
+//       totalItem: result.total,
+//     },
+//   });
+// });
+
+export const getAllPayments = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+
+    const userEmail = req.query.email as string;
+    const userName = req.query.name as string;
+    const userId = req.query.userId as string;
+    const location = req.query.location as string;
+    const Image = req.query.image as string;
+
+    const result = await getAllPaymentFromDB({
+      page,
+      limit,
+      userEmail,
+      userName,
+      userId,
+      location,
+      Image
+    });
+
+    if (result.data.length === 0) {
+      return sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "No payment records found",
+        data: [],
+        pagination: {
+          totalPage: 0,
+          currentPage: page,
+          prevPage: page > 1 ? page - 1 : 1,
+          nextPage: page + 1,
+          limit,
+          totalItem: 0,
+        },
+      });
+    }
+
+    const formattedPayments = result.data.map(payment => ({
+      Image: payment.userImage,
+      userName: payment.userName,
+      location: payment.location,
+      userId: payment.userId,
+      email: payment.email,
+      transactionId: payment.transactionId,
+      amount: payment.amount,
+      date: payment.createdAt,
+    }));
+
     return sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "No purchased history",
-      data: {
-        payments: {},  //[]
-      },
+      message: "Payments retrieved successfully.",
+      data: formattedPayments,
       pagination: {
         totalPage: Math.ceil(result.total / limit),
         currentPage: page,
         prevPage: page > 1 ? page - 1 : 1,
-        nextPage: result.data.length === limit ? page + 1 : page,
+        nextPage: page + 1,
         limit,
         totalItem: result.total,
       },
     });
+  } catch (error) {
+    return sendResponse(res, {
+      statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+      success: false,
+      message: (error as Error).message,
+      data: null,
+    });
   }
-  //console.log(result.data,"finding date")
-  const formattedPayments = result.data.map((payment: any) => ({
-    transactionId: payment.transactionId,
-    amount: payment.amount,
-    userName: payment.userName,
-    userEmail: payment.email,
-    userId: payment._id,
-    subscriptionName: payment.subscriptionName,
-    date: format(new Date(payment.createdAt), "do MMMM, yyyy"), // Format the date using date-fns
-  }));
+};
 
-  // await UserModel.findByIdAndUpdate(
-  // {  
-  //   userName
-    
-  // },
-  
-  //   { new: true },
-  // );
-
-  return sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Payments retrieved successfully.",
-    data: {
-      payments: formattedPayments,
-    },
-    pagination: {
-      totalPage: Math.ceil(result.total / limit),
-      currentPage: page,
-      prevPage: page > 1 ? page - 1 : 1,
-      nextPage: result.data.length === limit ? page + 1 : page,
-      limit,
-      totalItem: result.total,
-    },
-  });
-});
 
 
 export const getAllAmount = catchAsync(async(req:Request, res:Response)=>{

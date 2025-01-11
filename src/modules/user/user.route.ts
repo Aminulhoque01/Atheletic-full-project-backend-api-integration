@@ -20,11 +20,16 @@ import {
   getAllEventManager,
   recentFighterUser,
   getAllEventManagerEarning,
+  getAllJudgments,
+  recentAllerUser,
+  getAllerUser,
+  matchFighter,
   
   
 } from "./user.controller";
 import upload from "../../middlewares/fileUploadNormal";
 import { adminMiddleware } from "../../middlewares/auth";
+import { get } from "mongoose";
 // import { getAllEventManager } from "./user.service";
 
 const router = express.Router();
@@ -54,6 +59,16 @@ router.get("/fighter", adminMiddleware("admin"), getAllFighter);
 router.get("/eventManager", adminMiddleware("admin"), getAllEventManager);
 router.get("/recentUser", adminMiddleware("admin"), recentFighterUser);
 
-router.get("/earning",adminMiddleware("eventManager"), getAllEventManagerEarning)
+router.get("/recent-all-User", adminMiddleware("admin"), recentAllerUser);
+
+router.get("/total-User", adminMiddleware("admin"), getAllerUser);
+
+router.get("/earning",adminMiddleware("eventManager"), getAllEventManagerEarning);
+
+// judgment
+router.get("/judgment", getAllJudgments);
+router.get("/match-fighter", adminMiddleware("judgment"), matchFighter);
 
 export const UserRoutes = router;
+
+

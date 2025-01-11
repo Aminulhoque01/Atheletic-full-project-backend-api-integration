@@ -1,4 +1,4 @@
-// import { getAllEventManager } from './user.controller';
+
 import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
@@ -25,15 +25,20 @@ export const createUser = async ({
   dateOfBirth,
   company_Name,
   website,
-  company_Address,
+  Address,
   owner_firstName,
   owner_lastName,
   phoneNumber,
   gender,
   fightRecord,
   location,
+  boxing_short_video,
   role,
   interests,
+
+  judgmentExperience,
+  judgmentCategory,
+  experienceAwardDetails,
 }: {
   firstName: string;
   lastName: string;
@@ -49,12 +54,16 @@ export const createUser = async ({
   dateOfBirth: Date;
   company_Name: string;
   website: string;
-  company_Address: string;
+  Address: string;
   owner_firstName: string;
   owner_lastName: string;
   phoneNumber: string;
   gender: string;
+  boxing_short_video: string;
   interests: string[];
+  judgmentExperience: number;
+  judgmentCategory: string;
+  experienceAwardDetails: string;
 }): Promise<{ createdUser: IUser }> => {
   const createdUser = await UserModel.create({
     firstName,
@@ -64,7 +73,7 @@ export const createUser = async ({
     password: hashedPassword,
     company_Name,
     website,
-    company_Address,
+    Address,
     owner_firstName,
     owner_lastName,
     phoneNumber,
@@ -76,13 +85,20 @@ export const createUser = async ({
     fightRecord,
     location,
     role,
+    boxing_short_video,
     interests,
+    judgmentExperience,
+    judgmentCategory,
+    experienceAwardDetails,
   });
   return { createdUser };
 };
 
-export const findUserByEmail = async (email: string,fcmToken?:string): Promise<IUser | null> => {
-  const user= await UserModel.findOne({ email });
+export const findUserByEmail = async (
+  email: string,
+  fcmToken?: string
+): Promise<IUser | null> => {
+  const user = await UserModel.findOne({ email });
 
   if (user && fcmToken) {
     user.fcmToken = fcmToken; // Update the fcmToken if provided
@@ -194,7 +210,7 @@ export const sendOTPEmail = async (
       pass: Nodemailer_GMAIL_PASSWORD,
     },
   });
-  
+
   // English and Spanish email content based on the lang parameter
   const emailContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f0f0f0; padding: 20px;">
@@ -254,16 +270,42 @@ export const getAllEventManagers = async () => {
   });
   return eventManager;
 };
+export const getAllJudgments = async () => {
+  const judgment = await UserModel.find({
+    role: "judgment",
+    isDeleted: false,
+  });
+  return judgment;
+};
 
 export const recentFighterUsers = async (limit = 10) => {
-  const recentFighters = await UserModel.find({ role: "fighter", isDeleted: false })
+  const recentFighters = await UserModel.find({
+    role: "fighter",
+    isDeleted: false,
+  })
     .sort({ createdAt: -1 }) // Sort by createdAt in descending order
     .limit(limit); // Limit the number of results
   return recentFighters;
 };
 
+export const recentAllerUsers = async (limit = 10) => {
+  const recentFighters = await UserModel.countDocuments({
+    
+    isDeleted: false,
+  })
+    .sort({ createdAt: -1 }) // Sort by createdAt in descending order
+    .limit(limit); // Limit the number of results
+  return recentFighters;
+};
 
-export const getEventManagerEarnings = async (managerId: string): Promise<number> => {
+export const getAllTotalUsers = async () => {
+  const users = await UserModel.countDocuments({ isDeleted: false });
+  return users;
+}
+
+export const getEventManagerEarnings = async (
+  managerId: string
+): Promise<number> => {
   const eventManager = await UserModel.findById(managerId);
 
   if (!eventManager) {
@@ -272,7 +314,7 @@ export const getEventManagerEarnings = async (managerId: string): Promise<number
 
   // Return the total earnings
   return eventManager.earnings || 0;
-}
+};
 
 // export const getAllEarnings= async () => {
 //   const user = await UserModel.find().select("earnings");
@@ -283,3 +325,30 @@ export const getEventManagerEarnings = async (managerId: string): Promise<number
 // }
 
 
+// match fighter
+
+export const matchFighterService = async (fighterId: string) => {
+  // Fetch the fighter document
+  const fighter = await UserModel.findById(fighterId);
+  if (!fighter) throw new Error("Fighter not found");
+
+  // Explicitly convert height, weight, and age to numbers
+  const fighterHeight = Number(fighter.height);
+  const fighterWeight = Number(fighter.weight);
+  const fighterAge = Number(fighter.age);
+
+  // Ensure these values are valid numbers
+  if (isNaN(fighterHeight) || isNaN(fighterWeight) || isNaN(fighterAge)) {
+    throw new Error("Fighter data contains invalid height, weight, or age");
+  }
+
+  // Find matching fighters
+  return UserModel.find({
+    age: { $gte: fighterAge - 2, $lte: fighterAge + 2 },
+    height: { $gte: fighterHeight - 5, $lte: fighterHeight + 5 },
+    weight: { $gte: fighterWeight - 5, $lte: fighterWeight + 5 },
+    location: fighter.location,
+    role: "fighter",
+    _id: { $ne: fighter._id },
+  });
+};

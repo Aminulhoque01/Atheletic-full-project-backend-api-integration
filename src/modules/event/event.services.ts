@@ -1,6 +1,6 @@
-import { SortOrder } from "mongoose";
+import mongoose, { SortOrder } from "mongoose";
 import { EventFilterableFields } from "./event.constant";
-import { IEvent, IEventFilters } from "./event.interface";
+import { IEvent, IEventFilters, IFightCard } from "./event.interface";
 import { Event } from "./event.models";
 import { IpaginationsOptions } from "../../interface/paginations";
 import { IGeneticResponse } from "../../interface/commont";
@@ -90,23 +90,52 @@ const generateFighter = async (id: string): Promise<IEvent | null> => {
   if (!event) throw new Error("Event not found");
 
   // Example pairing logic
-  const participants = event.fightCards.map((card) => [card.participant1, card.participant2]).flat();
+  const participants = event.fightCards.map((card) => ({
+    _id: card._id,
+    participant1: card.participant1,
+    participant2: card.participant2,
+    status: card.status,
+  }));
+  
   const pairedFightCards = [];
-
+  
   for (let i = 0; i < participants.length; i += 2) {
     if (participants[i + 1]) {
       pairedFightCards.push({
-        participant1: participants[i],
-        participant2: participants[i + 1],
+        _id: new mongoose.Types.ObjectId(),
+        participant1: participants[i].participant1,
+        participant2: participants[i + 1].participant2,
         status: "Scheduled",
+        score: 0
       });
     }
   }
-
+  
   event.fightCards = pairedFightCards;
   await event.save();
   return event;
 };
+
+export const uploadScores = async (
+  eventId: string,
+  scores: { fightCardId: string; status: string }[]
+): Promise<IEvent | null> => {
+  const event = await Event.findById(eventId);
+
+  if (!event) throw new Error("Event not found");
+
+  event.fightCards.forEach((card) => {
+    const scoreUpdate = scores.find(
+      (score) => score.fightCardId === card._id.toString()
+    );
+    if (scoreUpdate) {
+      card.status = scoreUpdate.status;
+    }
+  });
+
+  return event.save();
+};
+
 
 export const EventService = {
   getAllEvent,
@@ -115,4 +144,5 @@ export const EventService = {
   eventDelete,
   createEvent,
   generateFighter,
+  uploadScores
 };

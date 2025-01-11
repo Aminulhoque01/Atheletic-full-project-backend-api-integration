@@ -1,4 +1,5 @@
-import { getAllEventManagers, getEventManagerEarnings } from './user.service';
+// import { getAllUsers } from './user.controller';
+import { getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, matchFighterService, recentAllerUsers } from "./user.service";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -9,14 +10,12 @@ import catchAsync from "../../utils/catchAsync";
 import sendError from "../../utils/sendError";
 import sendResponse from "../../utils/sendResponse";
 
-
 import {
   createUser,
   findUserByEmail,
   findUserById,
   generateOTP,
   generateToken,
-  
   getAllFighters,
   getStoredOTP,
   getUserList,
@@ -25,11 +24,10 @@ import {
   recentFighterUsers,
   saveOTP,
   sendOTPEmail,
-  
- 
-  
   updateUserById,
   userDelete,
+  getAllJudgments as getAllJudgmentsService,
+   
 } from "./user.service";
 
 import { OTPModel, PendingUserModel, UserModel } from "./user.model";
@@ -43,7 +41,8 @@ import {
 } from "../../config";
 // import { emitNotification } from "../../utils/socket";
 import httpStatus from "http-status";
-import sendNotification from '../../utils/sendNotification';
+import sendNotification from "../../utils/sendNotification";
+import { get } from "mongoose";
 
 export const registerUser = catchAsync(async (req: Request, res: Response) => {
   const {
@@ -52,13 +51,12 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     gym,
     email,
     password,
-
+    Address,
     weight,
     sport,
     dateOfBirth,
     company_Name,
     website,
-    company_Address,
     owner_firstName,
     owner_lastName,
     phoneNumber,
@@ -66,6 +64,12 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     fightRecord,
     location,
     role,
+    boxing_short_video,
+    // judgment
+    judgmentExperience,
+
+    judgmentCategory,
+    experienceAwardDetails,
     fcmToken,
   } = req.body;
 
@@ -95,7 +99,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       email,
       password,
       role,
-      
+      boxing_short_video,
       weight,
       sport,
       dateOfBirth,
@@ -127,7 +131,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       role,
       company_Name,
       website,
-      company_Address,
+      Address,
       owner_firstName,
       owner_lastName,
       phoneNumber,
@@ -147,6 +151,31 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
+  // judgment role
+
+  if (role === "judgment") {
+    const requiredFields = {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+      judgmentExperience,
+      judgmentCategory,
+      experienceAwardDetails,
+    };
+
+    // Trim all values and check for missing fields
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value || !value.toString().trim())
+      .map(([key]) => key);
+
+    if (missingFields.length > 0) {
+      return sendError(res, httpStatus.BAD_REQUEST, {
+        message: `Please fill all the fields: ${missingFields.join(", ")}`,
+      });
+    }
+  }
 
   const isUserRegistered = await findUserByEmail(email);
   if (isUserRegistered) {
@@ -169,13 +198,17 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       gym,
       company_Name,
       website,
-      company_Address,
+      Address,
       owner_firstName,
       owner_lastName,
       phoneNumber,
       gender,
       fightRecord,
       location,
+      boxing_short_video,
+      judgmentExperience,
+      judgmentCategory,
+      experienceAwardDetails,
       role,
     },
     { upsert: true }
@@ -242,9 +275,9 @@ export const resendOTP = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const loginUser = catchAsync(async (req: Request, res: Response) => {
-  const { email, password,fcmToken, } = req.body;
+  const { email, password, fcmToken } = req.body;
 
-  const user = await findUserByEmail(email,fcmToken);
+  const user = await findUserByEmail(email, fcmToken);
 
   // if (!fcmToken) {
   //   return sendError(res, httpStatus.BAD_REQUEST, {
@@ -292,12 +325,13 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     gym: user?.gym,
     company_Name: user?.company_Name,
     website: user?.website,
-    company_Address: user?.company_Address,
+    Address: user?.Address,
     owner_firstName: user?.owner_firstName,
     owner_lastName: user?.owner_lastName,
     phoneNumber: user?.phoneNumber,
     fightRecord: user?.fightRecord,
     location: user?.location,
+    boxing_short_video: user?.boxing_short_video,
   });
 
   sendResponse(res, {
@@ -322,25 +356,25 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
         gym: user?.gym,
         company_Name: user?.company_Name,
         website: user?.website,
-        company_Address: user?.company_Address,
+        Address: user?.Address,
         owner_firstName: user?.owner_firstName,
         owner_lastName: user?.owner_lastName,
         phoneNumber: user?.phoneNumber,
         fightRecord: user?.fightRecord,
         location: user?.location,
+        boxing_short_video: user?.boxing_short_video,
         bio: user?.bio,
         about: user?.about,
         address: user?.address,
+        judgmentExperience: user?.judgmentExperience,
+        judgmentCategory: user?.judgmentCategory,
+        experienceAwardDetails: user?.experienceAwardDetails,
       },
       AccessToken: token,
-      
     },
-   
   });
-  console.log(user)
+  console.log(user);
 });
-
-
 
 export const forgotPassword = catchAsync(
   async (req: Request, res: Response) => {
@@ -452,7 +486,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
-  const { otp, email, } = req.body;
+  const { otp, email } = req.body;
   // console.log("Step 1: Received OTP verification request", { otp, email });
 
   try {
@@ -489,15 +523,18 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       company_Name,
       website,
       location,
-      company_Address,
+      Address,
       fightRecord,
       owner_firstName,
       owner_lastName,
       phoneNumber,
       gender,
       role,
-       
-      
+      boxing_short_video,
+
+      judgmentExperience,
+      judgmentCategory,
+      experienceAwardDetails,
     } = userDetails;
 
     // console.log("Step 4: Hashing password");
@@ -515,16 +552,22 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       gym,
       company_Name,
       website,
-      company_Address,
+      Address,
       owner_firstName,
       owner_lastName,
       phoneNumber,
       gender,
       fightRecord,
       location,
+
       role,
-       
+
       interests: [],
+      boxing_short_video,
+
+      judgmentExperience,
+      judgmentCategory,
+      experienceAwardDetails,
     });
 
     // console.log("Step 6: Generating JWT token");
@@ -543,12 +586,11 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     //   // recipientId: createdUser._id as string,
     //   userId: createdUser._id as ObjectId,
     //   userMsg,
-      
+
     //   role: createdUser.role,
     //   type: "registration",
     //   sendBy: createdUser._id as ObjectId,
     // });
-   
 
     // console.log("Step 8: Sending success response");
     sendResponse(res, {
@@ -561,14 +603,9 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
     console.error("Error during OTP verification:", err);
     return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, {
       message: "An error occurred during OTP verification.",
-      
     });
   }
 });
-
-
-
-
 
 export const verifyForgotPasswordOTP = catchAsync(
   async (req: Request, res: Response) => {
@@ -1031,6 +1068,19 @@ export const getAllEventManager = catchAsync(
   }
 );
 
+
+export const getAllJudgments = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await getAllJudgmentsService();
+    sendResponse<IUser[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get all judgments list successfully",
+      data: result,
+    });
+  }
+);
+
 export const recentFighterUser = catchAsync(
   async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
@@ -1045,27 +1095,66 @@ export const recentFighterUser = catchAsync(
     });
   }
 );
+export const recentAllerUser = catchAsync(
+  async (req: Request, res: Response) => {
+    // const limit = parseInt(req.query.limit as string) || 10;
+
+    const recentFighter = await recentAllerUsers();
 
 
+    sendResponse<number>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get recent user successfully",
+      data: recentFighter,
+    });
+  }
+);
 
-export const getAllEventManagerEarning= catchAsync(async(req:Request, res:Response)=>{
-  
 
-  const { managerId } = req.body;
-  const earnings = await getEventManagerEarnings(managerId);
+export const getAllerUser = catchAsync(
+  async (req: Request, res: Response) => {
+   
 
-  if (!managerId) {
- 
-    throw new Error("managerId not found");
-  };
+    const totalUser = await getAllTotalUsers();
 
-  
+    sendResponse<number>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get recent user successfully",
+      data: totalUser,
+    });
+  }
+);
 
-  sendResponse<number>(res, {
+export const getAllEventManagerEarning = catchAsync(
+  async (req: Request, res: Response) => {
+    const { managerId } = req.body;
+    const earnings = await getEventManagerEarnings(managerId);
+
+    if (!managerId) {
+      throw new Error("managerId not found");
+    }
+
+    sendResponse<number>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "get total eventManager earning successfully",
+      data: earnings,
+    });
+  }
+);
+
+
+// match fighter
+
+export const matchFighter = catchAsync(async (req: Request, res: Response) => {
+  const { fighterId  } = req.body;
+  const result = await matchFighterService(fighterId );
+  sendResponse<IUser[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "get total eventManager earning successfully",
-    data: earnings,
-  })
-
-})
+    message: "get all fighter successfully",
+    data: result,
+  });
+});

@@ -1,0 +1,4 @@
+Sat Jan 11 2025 12:30:36 [SERVER-NAME] error: globalErrorHandler ~ Fighter not found
+Sat Jan 11 2025 12:32:24 [SERVER-NAME] error: globalErrorHandler ~ Cast to Number failed for value "NaN" (type number) at path "height" for model "User"
+Sat Jan 11 2025 12:33:34 [SERVER-NAME] error: globalErrorHandler ~ Cast to Number failed for value "NaN" (type number) at path "height" for model "User"
+Sat Jan 11 2025 12:37:0 [SERVER-NAME] error: globalErrorHandler ~ Fighter data contains invalid height, weight, or age

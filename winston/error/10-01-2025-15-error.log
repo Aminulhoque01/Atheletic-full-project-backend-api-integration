@@ -1,0 +1,11 @@
+Fri Jan 10 2025 15:20:36 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:21:34 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:22:33 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:24:3 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:27:26 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:28:24 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:29:25 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:31:33 [SERVER-NAME] error: globalErrorHandler ~ Event validation failed: fightCards.0.score: Cast to Number failed for value "NaN" (type number) at path "score"
+Fri Jan 10 2025 15:33:8 [SERVER-NAME] error: globalErrorHandler ~ Invalid score value: undefined for fightCardId: 6777b2cf9f6e736e24ea918d
+Fri Jan 10 2025 15:34:36 [SERVER-NAME] error: globalErrorHandler ~ Event not found
+Fri Jan 10 2025 15:34:54 [SERVER-NAME] error: globalErrorHandler ~ Event not found

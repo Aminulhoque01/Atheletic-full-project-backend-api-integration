@@ -19,7 +19,8 @@ const PendingUserSchema = new Schema<IPendingUser>(
       draws: { type: Number, required: true },
     },
     location: { type: String },
-    company_Address: {
+    boxing_short_video: { type: String, default: "/video/video.mp4" },
+    Address: {
       type: String,
       // default:""
     },
@@ -39,10 +40,18 @@ const PendingUserSchema = new Schema<IPendingUser>(
       type: String,
       // default:""
     },
+    company_Name: {
+      type: String,
+    },
+
+    judgmentExperience: { type: Number, required: true },
+
+    judgmentCategory: { type: String, required: true },
+    experienceAwardDetails: { type: String },
 
     role: {
       type: String,
-      enum: ["admin", "fighter", "eventManager"],
+      enum: ["admin", "fighter", "eventManager","judgment"],
     },
   },
   { timestamps: true }
@@ -79,9 +88,8 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "fighter", "eventManager"],
+      enum: ["admin", "fighter", "eventManager", "judgment"],
       // default: "user",
-          
     },
     status: {
       type: String,
@@ -90,23 +98,27 @@ const UserSchema = new Schema<IUser>(
       default: "active", // Default value set to active
     },
     fightRecord: {
-      wins: { type: Number,  },
-      losses: { type: Number,   },
-      draws: { type: Number,   },
+      wins: { type: Number },
+      losses: { type: Number },
+      draws: { type: Number },
     },
     weightClass: { type: String },
     trainingType: { type: String },
     isProUser: { type: Boolean, default: false },
-    isRegistered:{type: Boolean, default: false},
+    isRegistered: { type: Boolean, default: false },
+    boxing_short_video: {
+      type: String,
+      default: "/video/video.mp4",
+    },
     company_Name: {
       type: String,
     },
     location: { type: String },
     website: {
       type: String,
-      default:"/images/user.png"
+      default: "/images/user.png",
     },
-    company_Address: {
+    Address: {
       type: String,
       // default:""
     },
@@ -137,13 +149,13 @@ const UserSchema = new Schema<IUser>(
       type: String,
     },
 
-    interests:[
+    interests: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-      }
+      },
     ],
-    earnings: { type: Number,  },
+    earnings: { type: Number },
     cuponCode: {
       type: String, // Store the name of the promo code
       default: "", // Default value will be an empty string
@@ -161,18 +173,20 @@ const UserSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    fcmToken:{
+
+    judgmentExperience: { type: Number},
+
+    judgmentCategory: { type: String, },
+    experienceAwardDetails: { type: String },
+    fcmToken: {
       type: String,
-      default:""
-    }
-    
+      default: "",
+    },
   },
   { timestamps: true }
 );
 
 export const UserModel = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
-
-
 
 const OTPSchema = new Schema<IOTP>({
   email: { type: String, required: true, trim: true },

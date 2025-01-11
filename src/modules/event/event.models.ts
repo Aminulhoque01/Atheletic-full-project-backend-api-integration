@@ -5,8 +5,8 @@ import uuidv4 from "uuid";
 const EventSchema = new Schema<IEvent, EventModel>(
   {
     eventID: { type: String, unique: true },
-    managerId: { type: Schema.Types.ObjectId, ref: "EventManager",  },
-    eventName: { type: String, required: true  },
+    managerId: { type: Schema.Types.ObjectId, ref: "EventManager" },
+    eventName: { type: String, required: true },
     eventCategories: { type: [String], required: true },
     title: { type: String, required: true },
     eligibilityCriteria: {
@@ -20,6 +20,7 @@ const EventSchema = new Schema<IEvent, EventModel>(
         participant1: { type: String, required: true },
         participant2: { type: String, required: true },
         status: { type: String, default: "Scheduled" },
+        score: { type: Number },
       },
     ],
     statistics: {
@@ -47,8 +48,14 @@ const EventSchema = new Schema<IEvent, EventModel>(
     eventDescription: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-    id: { type: Schema.Types.ObjectId,  },
-    
+    id: { type: Schema.Types.ObjectId },
+    eventLogo: { type: String, required: true, default: "/logo/logo.png" },
+    eventBanner: {
+      type: String,
+      required: true,
+      default: "/banner/banner.png",
+    },
+    // scores: { type: [Object], default: [] },
   },
   { timestamps: true }
 );
@@ -69,8 +76,6 @@ EventSchema.pre("save", function (next) {
 // });
 
 export const Event = model<IEvent, EventModel>("Event", EventSchema);
-
-
 
 // // Add Methods
 // EventSchema.methods.registerAthlete = function (athlete: string): void {

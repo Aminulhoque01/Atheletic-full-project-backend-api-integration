@@ -1,4 +1,4 @@
-import { object } from 'zod';
+import { object } from "zod";
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { EventFilterableFields } from "./event.constant";
@@ -72,7 +72,7 @@ export const createEvent: RequestHandler = catchAsync(
 const getAllEvent: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const filters = pick(req.query, EventFilterableFields);
-    
+
     const paginationOptions = {
       page: parseInt(req.query.page as string, 10) || 1,
       limit: parseInt(req.query.limit as string, 10) || 10,
@@ -183,6 +183,8 @@ const generateFighterCard = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+
 export const EventController = {
   createEvent,
   getAllEvent,
@@ -190,4 +192,5 @@ export const EventController = {
   updateEvent,
   deleteEvent,
   generateFighterCard,
+  
 };
