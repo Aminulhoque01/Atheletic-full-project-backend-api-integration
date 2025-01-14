@@ -137,6 +137,17 @@ export const uploadScores = async (
 };
 
 
+const getFightResults = async(eventId:string)=>{
+  const event = await Event.findById(eventId);
+  if (!event) throw new Error("Event not found");
+
+  const wins = event.fightCards.filter((fight) => fight.score && fight.score > 0);
+  const losses = event.fightCards.filter((fight) => fight.score && fight.score <= 0);
+
+  return { wins, losses };
+}
+
+
 export const EventService = {
   getAllEvent,
   getSingleEvent,
@@ -144,5 +155,6 @@ export const EventService = {
   eventDelete,
   createEvent,
   generateFighter,
-  uploadScores
+  uploadScores,
+  getFightResults
 };

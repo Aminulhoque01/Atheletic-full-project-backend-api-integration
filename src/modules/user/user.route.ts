@@ -26,6 +26,11 @@ import {
   matchFighter,
   
   
+  
+  updateMyProfileFavoriterFighter,
+  deleteFavoriteFighter,
+  
+  
 } from "./user.controller";
 import upload from "../../middlewares/fileUploadNormal";
 import { adminMiddleware } from "../../middlewares/auth";
@@ -68,6 +73,14 @@ router.get("/earning",adminMiddleware("eventManager"), getAllEventManagerEarning
 // judgment
 router.get("/judgment", getAllJudgments);
 router.get("/match-fighter", adminMiddleware("judgment"), matchFighter);
+
+
+
+//user favorite fighte
+
+router.patch("/addFavorite", adminMiddleware("fighter"), updateMyProfileFavoriterFighter );
+router.delete("/remove-favorite", adminMiddleware("fighter"), deleteFavoriteFighter)
+
 
 export const UserRoutes = router;
 

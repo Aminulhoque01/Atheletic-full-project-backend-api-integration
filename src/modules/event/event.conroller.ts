@@ -2,7 +2,7 @@ import { object } from "zod";
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { EventFilterableFields } from "./event.constant";
-import { IEvent } from "./event.interface";
+import { IEvent, IFightCard } from "./event.interface";
 import { EventService } from "./event.services";
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
@@ -184,6 +184,24 @@ const generateFighterCard = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const eventResult= catchAsync(async(req:Request, res:Response)=>{
+  const { eventId } = req.params;
+  const results = await EventService.getFightResults(eventId);
+
+  if(!results){
+    throw new Error("Fighter card generation failed")
+    
+  }
+
+  sendResponse<IEvent>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Event fighter card generated successfully",
+    data: results,
+  });
+})
+
+
 
 export const EventController = {
   createEvent,
@@ -192,5 +210,7 @@ export const EventController = {
   updateEvent,
   deleteEvent,
   generateFighterCard,
+
+  eventResult
   
 };

@@ -1,9 +1,9 @@
 // import { getAllUsers } from './user.controller';
-import { getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, matchFighterService, recentAllerUsers } from "./user.service";
+import { getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, getMyFavoriteFighters, matchFighterService, recentAllerUsers, userFavoriteFighter } from "./user.service";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
-
+// import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import catchAsync from "../../utils/catchAsync";
@@ -27,7 +27,7 @@ import {
   updateUserById,
   userDelete,
   getAllJudgments as getAllJudgmentsService,
-   
+
 } from "./user.service";
 
 import { OTPModel, PendingUserModel, UserModel } from "./user.model";
@@ -53,6 +53,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
     password,
     Address,
     weight,
+    height,
     sport,
     dateOfBirth,
     company_Name,
@@ -101,6 +102,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       role,
       boxing_short_video,
       weight,
+      height,
       sport,
       dateOfBirth,
       gym,
@@ -193,6 +195,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       password,
       fcmToken,
       weight,
+      height,
       sport,
       dateOfBirth,
       gym,
@@ -320,6 +323,7 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     about: user?.about,
     address: user?.address,
     weight: user?.weight,
+    height: user?.height,
     sport: user?.sport,
     dateOfBirth: user?.dateOfBirth,
     gym: user?.gym,
@@ -517,6 +521,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       lastName,
       password,
       weight,
+      height,
       sport,
       dateOfBirth,
       gym,
@@ -547,6 +552,7 @@ export const verifyOTP = catchAsync(async (req: Request, res: Response) => {
       email,
       hashedPassword,
       weight,
+      height,
       sport,
       dateOfBirth,
       gym,
@@ -1114,7 +1120,7 @@ export const recentAllerUser = catchAsync(
 
 export const getAllerUser = catchAsync(
   async (req: Request, res: Response) => {
-   
+
 
     const totalUser = await getAllTotalUsers();
 
@@ -1149,12 +1155,134 @@ export const getAllEventManagerEarning = catchAsync(
 // match fighter
 
 export const matchFighter = catchAsync(async (req: Request, res: Response) => {
-  const { fighterId  } = req.body;
-  const result = await matchFighterService(fighterId );
+  const { fighterId } = req.body
+
+  const result = await matchFighterService(fighterId)
+
+
   sendResponse<IUser[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "get all fighter successfully",
+    message: "get all match fighter successfully",
     data: result,
   });
+
+
+
 });
+
+
+// my faverite fighter
+export const updateMyProfileFavoriterFighter = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  let { favorite } = req.body;
+
+  // Parse `favorite` if it's a string
+  if (typeof favorite === 'string') {
+    try {
+      favorite = JSON.parse(favorite);
+    } catch (error) {
+      return sendError(res, httpStatus.BAD_REQUEST, { message: "Invalid favorite format." });
+    }
+  }
+
+  if (!Array.isArray(favorite)) {
+    return sendError(res, httpStatus.BAD_REQUEST, { message: "Favorite must be an array of user IDs." });
+  }
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return sendError(res, httpStatus.UNAUTHORIZED, {
+      message: "No token provided or invalid format.",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const userId = decoded.id;
+
+  if (!userId) {
+    return sendError(res, httpStatus.UNAUTHORIZED, { message: "User not authenticated." });
+  }
+
+  // Validate user IDs in the `favorite` array
+  const validUsers = await UserModel.find({ _id: { $in: favorite } }).select("_id");
+  const validUserIds = validUsers.map(user => user._id.toString());
+
+  if (validUserIds.length !== favorite.length) {
+    return sendError(res, httpStatus.BAD_REQUEST, {
+      message: "Some user IDs in the favorite list are invalid.",
+    });
+  }
+
+  // Update the `favorite` field for the authenticated user
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    userId,
+    { $addToSet: { favorite: { $each: validUserIds } } },
+    { new: true }
+  ).populate("favorite");
+
+  if (!updatedUser) {
+    return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, { message: "Failed to update favorite." });
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Favorite fighters updated successfully.",
+    data: { user: updatedUser },
+  });
+});
+
+
+
+// remove favorite fighter 
+
+export const deleteFavoriteFighter = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const { fighterId } = req.body;
+
+  if (!fighterId) {
+    return sendError(res, httpStatus.BAD_REQUEST, { message: "Fighter ID is required." });
+  }
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return sendError(res, httpStatus.UNAUTHORIZED, {
+      message: "No token provided or invalid format.",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const userId = decoded.id;
+
+  if (!userId) {
+    return sendError(res, httpStatus.UNAUTHORIZED, { message: "User not authenticated." });
+  }
+
+  // Validate fighterId (optional)
+  const fighterExists = await UserModel.findById(fighterId);
+  if (!fighterExists) {
+    return sendError(res, httpStatus.BAD_REQUEST, { message: "Fighter ID does not exist." });
+  }
+
+  // Remove the fighter ID from the favorite array
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    userId,
+    { $pull: { favorite: fighterId } }, // Use $pull to remove the specific ID
+    { new: true }
+  ).populate("favorite");
+
+  if (!updatedUser) {
+    return sendError(res, httpStatus.INTERNAL_SERVER_ERROR, { message: "Failed to remove favorite fighter." });
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Favorite fighter removed successfully.",
+    data: { user: updatedUser },
+  });
+});
+

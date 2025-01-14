@@ -68,6 +68,7 @@ export type IUser = {
   bio: string;
   earnings: number;
   isRegistered:boolean
+  favorite: mongoose.Types.ObjectId[];
   // evemtManager
   company_Name:string;
   website:string,

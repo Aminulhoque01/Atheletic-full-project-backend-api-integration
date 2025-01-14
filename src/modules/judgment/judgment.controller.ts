@@ -4,18 +4,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { judgmentProfileService } from "./judgment.service";
 
-// const createJudgment = catchAsync(async (req: Request, res: Response) => {
-//     const { ...judgmentData } = req.body;
 
-//     const profile = await judgmentProfileService.createJudgment(judgmentData);
-
-//     sendResponse(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: "profile created successfully",
-//         data: profile
-//     })
-// });
 
 export const uploadScores = catchAsync(async (req: Request, res: Response) => {
   const { eventId, scores } = req.body;

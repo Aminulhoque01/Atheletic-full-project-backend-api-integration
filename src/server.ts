@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import seedSuperAdmin from "./DB";
 import app from "./app";
 import { DATABASE_URL, PORT } from "./config";
-import { initSocketIO } from "./utils/socket";
+// import { initSocketIO } from "./utils/socket";
 
 import http from "http";
-import { Server } from "socket.io";
+// import { Server } from "socket.io";
 
 const server = http.createServer(app);
 
-const HOST = "192.168.10.134"; // Replace with your desired IP
+const HOST = "10.0.60.112"; // Replace with your desired IP
 
 async function main() {
   try {

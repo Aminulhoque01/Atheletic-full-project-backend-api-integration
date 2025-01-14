@@ -148,7 +148,12 @@ const UserSchema = new Schema<IUser>(
     about: {
       type: String,
     },
-
+    favorite: [
+      {
+        type: mongoose.Schema.Types.ObjectId, // Specifies the field contains ObjectId references
+        ref: "User", // Replace "User" with the actual name of your referenced model
+      },
+    ],
     interests: [
       {
         type: mongoose.Schema.Types.ObjectId,

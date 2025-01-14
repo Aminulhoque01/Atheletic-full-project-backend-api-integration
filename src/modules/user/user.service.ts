@@ -12,6 +12,9 @@ import {
   Nodemailer_GMAIL,
   Nodemailer_GMAIL_PASSWORD,
 } from "../../config";
+import catchAsync from "../../utils/catchAsync";
+import sendError from "../../utils/sendError";
+import sendResponse from "../../utils/sendResponse";
 
 export const createUser = async ({
   firstName,
@@ -20,6 +23,7 @@ export const createUser = async ({
   hashedPassword,
   fcmToken,
   weight,
+  height,
   sport,
   gym,
   dateOfBirth,
@@ -47,6 +51,7 @@ export const createUser = async ({
   hashedPassword: string;
   fcmToken?: string;
   weight: number;
+  height:number;
   sport: string;
   gym: string;
   fightRecord: object;
@@ -79,6 +84,7 @@ export const createUser = async ({
     phoneNumber,
     gender,
     weight,
+    height,
     sport,
     gym,
     dateOfBirth,
@@ -290,7 +296,7 @@ export const recentFighterUsers = async (limit = 10) => {
 
 export const recentAllerUsers = async (limit = 10) => {
   const recentFighters = await UserModel.countDocuments({
-    
+
     isDeleted: false,
   })
     .sort({ createdAt: -1 }) // Sort by createdAt in descending order
@@ -327,28 +333,63 @@ export const getEventManagerEarnings = async (
 
 // match fighter
 
-export const matchFighterService = async (fighterId: string) => {
-  // Fetch the fighter document
+export const matchFighterService = async (fighterId: string, page: number, limit: number) => {
   const fighter = await UserModel.findById(fighterId);
   if (!fighter) throw new Error("Fighter not found");
 
-  // Explicitly convert height, weight, and age to numbers
   const fighterHeight = Number(fighter.height);
   const fighterWeight = Number(fighter.weight);
-  const fighterAge = Number(fighter.age);
+  const fighterAge = fighter.dateOfBirth
+    ? new Date().getFullYear() - new Date(fighter.dateOfBirth).getFullYear()
+    : NaN;
 
-  // Ensure these values are valid numbers
   if (isNaN(fighterHeight) || isNaN(fighterWeight) || isNaN(fighterAge)) {
-    throw new Error("Fighter data contains invalid height, weight, or age");
+    throw new Error("Fighter data contains invalid values");
   }
 
-  // Find matching fighters
-  return UserModel.find({
-    age: { $gte: fighterAge - 2, $lte: fighterAge + 2 },
-    height: { $gte: fighterHeight - 5, $lte: fighterHeight + 5 },
-    weight: { $gte: fighterWeight - 5, $lte: fighterWeight + 5 },
-    location: fighter.location,
-    role: "fighter",
-    _id: { $ne: fighter._id },
-  });
+  
+
+
+
+  const matches = await UserModel.aggregate([
+    {
+      $addFields: {
+        age: {
+          $subtract: [
+            new Date().getFullYear(),
+            { $year: "$dateOfBirth" }
+          ],
+        },
+      },
+    },
+    {
+      $match: {
+        age: { $gte: fighterAge - 2, $lte: fighterAge + 2 },
+        height: { $gte: fighterHeight - 5, $lte: fighterHeight + 5 },
+        weight: { $gte: fighterWeight - 5, $lte: fighterWeight + 5 },
+        location: fighter.location,
+        role: "fighter",
+        _id: { $ne: fighter._id },
+      },
+    },
+  ]);
+  
+
+  return matches;
+  
 };
+
+
+
+
+
+export const getMyFavoriteFighters = async(userId:string)=>{
+  const user = await UserModel.findById(userId).populate("favorites");
+
+  if (!user) throw new Error("User not found");
+
+  return user.favorites;
+}
+
+
+

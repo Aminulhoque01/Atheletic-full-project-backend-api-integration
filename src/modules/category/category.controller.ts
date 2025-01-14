@@ -9,7 +9,7 @@ import multer from "multer";
 import { getUserList } from "../user/user.service";
 import { JWT_SECRET_KEY } from "../../config";
 import { UserModel } from "../user/user.model";
-import { error } from "winston";
+
 import { CategoryModel } from "./category.model";
 import sendError from "../../utils/sendError";
 import { Event } from "../event/event.models";
