@@ -83,3 +83,36 @@ export interface IFightCard {
 
   }[];
 }
+
+
+export interface IFightResults {
+
+  wins: {
+
+    _id: any;
+
+    participant1: string;
+
+    participant2: string;
+
+    status: string;
+
+    score: number;
+
+  }[];
+
+  losses: {
+
+    _id: any;
+
+    participant1: string;
+
+    participant2: string;
+
+    status: string;
+
+    score: number;
+
+  }[];
+
+}

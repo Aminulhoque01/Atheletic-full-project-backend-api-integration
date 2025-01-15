@@ -10,12 +10,14 @@ export type IPendingUser = {
   firstName: string;
   lastName: string;
   password: string;
-
+  movements: number;
+  others: number;
   height: number;
   weight: number;
   sport: string;
   dateOfBirth: Date;
   gender: string;
+  scores:number;
   company_Name:string;
   website:string,
   Address: string;
@@ -62,6 +64,7 @@ export type IUser = {
   status: "active" | "blocked";
   age: string;
   gender: string;
+  scores:number;
   fightRecord?: object;
   boxing_short_video?:string;
   about: string;
@@ -69,6 +72,8 @@ export type IUser = {
   earnings: number;
   isRegistered:boolean
   favorite: mongoose.Types.ObjectId[];
+  movements: number;
+  others: number;
   // evemtManager
   company_Name:string;
   website:string,

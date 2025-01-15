@@ -2,14 +2,14 @@ import { object } from "zod";
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { EventFilterableFields } from "./event.constant";
-import { IEvent, IFightCard } from "./event.interface";
+import { IEvent, IFightCard, IFightResults } from "./event.interface";
 import { EventService } from "./event.services";
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import pick from "../../shared/pick";
 import { paginationFields } from "../../shared/constrant";
-import { Error } from "mongoose";
+import mongoose, { Error, Types } from "mongoose";
 
 import sendError from "../../utils/sendError";
 import { JWT_SECRET_KEY } from "../../config";
@@ -184,23 +184,31 @@ const generateFighterCard = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-const eventResult= catchAsync(async(req:Request, res:Response)=>{
-  const { eventId } = req.params;
-  const results = await EventService.getFightResults(eventId);
 
-  if(!results){
-    throw new Error("Fighter card generation failed")
-    
+
+
+const eventResult: RequestHandler = catchAsync(async (req, res, next) => {
+  const { id  } = req.params;
+  console.log(id )
+  // Validate eventId
+  if (!id  || !mongoose.Types.ObjectId.isValid(id )) {
+    throw new Error("Invalid Event ID: Must be a 24-character hex string.");
   }
 
-  sendResponse<IEvent>(res, {
+  console.log("Validated eventId:", id );
+
+  const results = await EventService.getFightResults(id);
+  if (!results) {
+    throw new Error("Fighter card generation failed.");
+  }
+
+  sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Event fighter card generated successfully",
+    message: "get event result successfully.",
     data: results,
   });
-})
-
+});
 
 
 export const EventController = {

@@ -19,6 +19,7 @@ import { SupportRoutes } from "../modules/support/support.route";
 import { withdrawRouter } from "../modules/withdraw-request/withdraw.router";
 import { NotificationRoutes } from "../modules/notifications/notification.route";
 import { JudgmentRoutes } from "../modules/judgment/judgment.router";
+import { MatchRoutes } from "../modules/match/match.route";
 
 
 
@@ -76,6 +77,10 @@ const apiRoutes = [
   {
     path: "/judgment",
     route: JudgmentRoutes,
+  },
+  {
+    path: "/match",
+    route: MatchRoutes,
   },
   {
     path: "/about",

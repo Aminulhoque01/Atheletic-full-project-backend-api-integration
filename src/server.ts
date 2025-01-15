@@ -9,7 +9,7 @@ import http from "http";
 
 const server = http.createServer(app);
 
-const HOST = "10.0.60.112"; // Replace with your desired IP
+const HOST = "10.0.60.22"; // Replace with your desired IP
 
 async function main() {
   try {

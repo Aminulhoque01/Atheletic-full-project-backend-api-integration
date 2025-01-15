@@ -12,6 +12,7 @@ const PendingUserSchema = new Schema<IPendingUser>(
     sport: { type: String },
     gender: { type: String },
     dateOfBirth: { type: Date },
+    scores:{ type: Number },
     gym: { type: String },
     fightRecord: {
       wins: { type: Number, required: true },
@@ -20,6 +21,8 @@ const PendingUserSchema = new Schema<IPendingUser>(
     },
     location: { type: String },
     boxing_short_video: { type: String, default: "/video/video.mp4" },
+    movements: { type: Number },
+    others: { type: Number },
     Address: {
       type: String,
       // default:""
@@ -51,7 +54,7 @@ const PendingUserSchema = new Schema<IPendingUser>(
 
     role: {
       type: String,
-      enum: ["admin", "fighter", "eventManager","judgment"],
+      enum: ["admin", "fighter", "eventManager", "judgment"],
     },
   },
   { timestamps: true }
@@ -161,6 +164,9 @@ const UserSchema = new Schema<IUser>(
       },
     ],
     earnings: { type: Number },
+    movements: { type: Number },
+    scores:{ type: Number },
+    others: { type: Number },
     cuponCode: {
       type: String, // Store the name of the promo code
       default: "", // Default value will be an empty string
@@ -179,7 +185,7 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
 
-    judgmentExperience: { type: Number},
+    judgmentExperience: { type: Number },
 
     judgmentCategory: { type: String, },
     experienceAwardDetails: { type: String },
@@ -187,6 +193,7 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: "",
     },
+    
   },
   { timestamps: true }
 );

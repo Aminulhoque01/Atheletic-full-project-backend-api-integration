@@ -163,8 +163,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       password,
       role,
       judgmentExperience,
-      judgmentCategory,
-      experienceAwardDetails,
+      
     };
 
     // Trim all values and check for missing fields
