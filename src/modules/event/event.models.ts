@@ -1,28 +1,21 @@
 import { model, Schema } from "mongoose";
 import { EventModel, IEvent } from "./event.interface";
-import uuidv4 from "uuid";
+
 
 const EventSchema = new Schema<IEvent, EventModel>(
   {
-    eventID: { type: String, unique: true },
-    managerId: { type: Schema.Types.ObjectId, ref: "EventManager" },
+    // eventID: { type: String, unique: true },
+    manager: { type: Schema.Types.ObjectId, ref: "User" },
     eventName: { type: String, required: true },
-    eventCategories: { type: [String], required: true },
+    eventCategories: {  type: [],  ref:"Category", required: true },
     title: { type: String, required: true },
     eligibilityCriteria: {
-      age: { type: Number, required: true },
-      weightCategory: { type: String, required: true },
-      discipline: { type: String, required: true },
+      age: { type: Number},
+      // weightCategory: { type: String, required: true },
+      // discipline: { type: String, required: true },
     },
     isPaid: { type: Boolean, required: true },
-    fightCards: [
-      {
-        participant1: { type: String, required: true },
-        participant2: { type: String, required: true },
-        status: { type: String, default: "Scheduled" },
-        score: { type: Number },
-      },
-    ],
+    
     statistics: {
       registrations: { type: Number, default: 0 },
       paymentStatus: {
@@ -35,14 +28,31 @@ const EventSchema = new Schema<IEvent, EventModel>(
       enum: ["basic", "advanced"],
       // required: true,
     },
-    eventType: { type: String, required: true },
+    eventType: {
+      type: String,
+      enum: ["GALA", "Tournament"],
+      required: true
+    },
     eventLocation: { type: String, required: true },
-    registrationOpenDateTime: { type: Date, required: true },
-    registrationLastDateTime: { type: Date, required: true },
-    preRegistrationOpenDateTime: { type: Date, default: null },
-    preRegistrationLastDateTime: { type: Date, default: null },
-    finalEventDateTime: { type: Date, required: true },
-    eventEndDateTime: { type: Date, required: true },
+    registrationOpenDateTime: {
+      RegistrationOpenDate: { type: Date, required: true },
+      RegistrationOpenTime: { type: String, required: true },
+      RegistonLastDate: { type: Date, required: true },
+      RegistionLastTime: { type: String, required: true },
+    },
+    pre_registrationOpenDateTime: {
+      Pre_RegistrationOpenDate: { type: Date, required: true },
+      Pre_RegistrationOpenTime: { type: String, required: true },
+      Pre_RegistonLastDate: { type: Date, required: true },
+      Pre_RegistionLastTime: { type: String, required: true },
+    },
+    finalEventDateTime: {
+      eventOpenDateline: { type: Date, required: true },
+      eventOpenTime: { type: String, required: true },
+      eventEndDateline: { type: Date, required: true },
+      eventEndTime: { type: String, required: true },
+    },
+    
     chosenSports: { type: [String], required: true },
     eventEntryFee: { type: Number, required: true },
     eventDescription: { type: String, required: true },
@@ -56,8 +66,11 @@ const EventSchema = new Schema<IEvent, EventModel>(
       default: "/banner/banner.png",
     },
     // scores: { type: [Object], default: [] },
+   
   },
-  { timestamps: true }
+  
+  { timestamps: true },
+ 
 );
 
 EventSchema.pre("save", function (next) {
@@ -67,15 +80,10 @@ EventSchema.pre("save", function (next) {
   next();
 });
 
-// EventSchema.pre("save", function (next) {
-//   if (!this.eventID) {
-//     // Generate a custom eventID (e.g., based on timestamp + unique ID)
-//     this.eventID = `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-//   }
-//   next();
-// });
+
 
 export const Event = model<IEvent, EventModel>("Event", EventSchema);
+
 
 // // Add Methods
 // EventSchema.methods.registerAthlete = function (athlete: string): void {

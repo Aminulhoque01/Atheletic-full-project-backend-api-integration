@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IPendingUser, IUser, IOTP } from "./user.interface";
+import { number } from "joi";
 
 const PendingUserSchema = new Schema<IPendingUser>(
   {
@@ -101,9 +102,12 @@ const UserSchema = new Schema<IUser>(
       default: "active", // Default value set to active
     },
     fightRecord: {
-      wins: { type: Number },
-      losses: { type: Number },
-      draws: { type: Number },
+      matchesPlayed: { type: Number, default: 0 }, // Total matches played
+      wins: { type: Number, default: 0 },         // Matches won
+      losses: { type: Number, default: 0 },       // Matches lost
+      draws: { type: Number, default: 0 },        // Matches drawn
+      scores:{ type: Number, ref:"Match"},
+      // ref:"Match"
     },
     weightClass: { type: String },
     trainingType: { type: String },
@@ -113,6 +117,14 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: "/video/video.mp4",
     },
+
+    friendRequests: [
+      {
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // User who sent the request
+        status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" }, // Status of the request
+      },
+    ],
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     company_Name: {
       type: String,
     },
@@ -157,15 +169,18 @@ const UserSchema = new Schema<IUser>(
         ref: "User", // Replace "User" with the actual name of your referenced model
       },
     ],
+    blockedUsers: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     interests: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
       },
     ],
+
+  
     earnings: { type: Number },
     movements: { type: Number },
-    scores:{ type: Number },
+    scores:{ type: Number, ref:"Match"},
     others: { type: Number },
     cuponCode: {
       type: String, // Store the name of the promo code
@@ -207,3 +222,5 @@ const OTPSchema = new Schema<IOTP>({
 });
 
 export const OTPModel = mongoose.model<IOTP>("OTP", OTPSchema);
+
+

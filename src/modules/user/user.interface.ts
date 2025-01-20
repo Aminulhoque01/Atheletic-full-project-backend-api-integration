@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 interface IEarning {
   amount: number;
   date: Date;
@@ -74,6 +74,9 @@ export type IUser = {
   favorite: mongoose.Types.ObjectId[];
   movements: number;
   others: number;
+  friendRequests:IFriendRequest[],
+  friends:mongoose.Types.ObjectId[],
+  blockedUsers:mongoose.Types.ObjectId[],
   // evemtManager
   company_Name:string;
   website:string,
@@ -97,8 +100,25 @@ export type IUser = {
  
 } & Document;
 
+
+
 export type IOTP = {
   email: string;
   otp: string;
   expiresAt: Date;
 } & Document;
+
+
+export interface FilterOptions {
+  sport?: string;
+  location?: string;
+  trainingType?: string;
+  weight?: string;
+  sortBy?: string;
+  order?: "asc" | "desc";
+};
+
+export interface IFriendRequest {
+  sender: Types.ObjectId; // Reference to the sender of the friend request
+  status: "pending" | "accepted" | "rejected"; // Status of the friend request
+}

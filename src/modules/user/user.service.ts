@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import { IUser, IPendingUser } from "./user.interface";
+import { IUser, IPendingUser, FilterOptions } from "./user.interface";
 
 import { OTPModel, PendingUserModel, UserModel } from "./user.model";
 
@@ -15,6 +15,7 @@ import {
 import catchAsync from "../../utils/catchAsync";
 import sendError from "../../utils/sendError";
 import sendResponse from "../../utils/sendResponse";
+import mongoose from "mongoose";
 
 export const createUser = async ({
   firstName,
@@ -269,6 +270,18 @@ export const getAllFighters = async () => {
   const fighters = await UserModel.find({ role: "fighter", isDeleted: false });
   return fighters;
 };
+
+export const getSingleFighters = async (fighterId: string) => {
+  // If querying by _id, ensure it is converted to ObjectId
+  if (!mongoose.Types.ObjectId.isValid(fighterId)) {
+    throw new Error("Invalid Fighter ID format");
+  }
+
+  const fighter = await UserModel.findOne({_id:  fighterId }); // Querying by _id
+  return fighter;
+};
+
+
 export const getAllEventManagers = async () => {
   const eventManager = await UserModel.find({
     role: "eventManager",
@@ -322,6 +335,27 @@ export const getEventManagerEarnings = async (
   return eventManager.earnings || 0;
 };
 
+
+export const getFilteredFighters = async (filters: FilterOptions) => {
+  const query: any = { role: "fighter" }; // Ensures only fighters are queried
+
+  // Add filters to the query object if they exist
+  if (filters.sport) query.sport = filters.sport;
+  if (filters.location) query.location = filters.location;
+  if (filters.trainingType) query.trainingType = filters.trainingType;
+  if (filters.weight) query.weight = filters.weight;
+
+  // Sorting logic
+  const sort: any = {};
+  if (filters.sortBy) {
+    sort[filters.sortBy] = filters.order === "desc" ? -1 : 1;
+  }
+
+  // Fetch and return the fighters
+  return UserModel.find(query).sort(sort);
+};
+
+
 // export const getAllEarnings= async () => {
 //   const user = await UserModel.find().select("earnings");
 //     // if (!user) throw new Error("User not found");
@@ -333,7 +367,7 @@ export const getEventManagerEarnings = async (
 
 // match fighter
 
-export const matchFighterService = async (fighterId: string, page: number, limit: number) => {
+export const matchFighterService = async (fighterId: string) => {
   const fighter = await UserModel.findById(fighterId);
   if (!fighter) throw new Error("Fighter not found");
 
@@ -389,7 +423,133 @@ export const getMyFavoriteFighters = async(userId:string)=>{
   if (!user) throw new Error("User not found");
 
   return user.favorites;
-}
+};
+
+
+export const sendFriendRequest = async (
+  senderId: string,
+  receiverId: string
+): Promise<string> => {
+  if (senderId === receiverId) {
+    throw new Error("You cannot send a friend request to yourself.");
+  }
+
+  const sender = await UserModel.findById(senderId);
+  const receiver = await UserModel.findById(receiverId);
+
+  if (!sender || !receiver) {
+    throw new Error("User not found.");
+  }
+
+  // Check if a request already exists
+  const existingRequest = receiver.friendRequests.find(
+    (req: any) => req.sender.toString() === senderId
+  );
+
+  if (existingRequest) {
+    throw new Error("Friend request already sent.");
+  }
+
+  // Add friend request to receiver
+  receiver.friendRequests.push({ sender: senderId, status: "pending" });
+  await receiver.save();
+
+  return "Friend request sent successfully.";
+};
+
+
+export const getFriendRequests = async (userId: string) => {
+  const user = await UserModel.findById(userId).populate("friendRequests.sender");
+  if (!user) {
+    throw new Error("User not found.");
+  }
+  return user.friendRequests;
+};
 
 
 
+export const respondToFriendRequest = async (
+  userId: string,
+  senderId: string,
+  action: "accept" | "reject"
+): Promise<string> => {
+  const user = await UserModel.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const requestIndex = user.friendRequests.findIndex(
+    (req: any) => req.sender.toString() === senderId
+  );
+
+  if (requestIndex === -1) {
+    throw new Error("Friend request not found.");
+  }
+
+  const friendRequest = user.friendRequests[requestIndex];
+
+  if (action === "accept") {
+    user.friends.push(senderId); // Add to friends
+    await UserModel.findByIdAndUpdate(senderId, {
+      $push: { friends: userId },
+    }); // Add reciprocal friendship
+  }
+
+  user.friendRequests.splice(requestIndex, 1); // Remove the friend request
+  await user.save();
+
+  return action === "accept"
+    ? "Friend request accepted."
+    : "Friend request rejected.";
+};
+
+
+export const blockFighters = async (blockerId:string, blockedId:string) => {
+  try {
+    const blocker = await UserModel.findById(blockerId);
+    const blocked = await UserModel.findById(blockedId);
+
+    if (!blocker || !blocked) {
+      throw new Error("User not found");
+    }
+
+    // Add blockedId to blocker's `friends` or block list (as per schema)
+    if (!blocker.blockedUsers) {
+      blocker.blockedUsers = [];
+    }
+
+    if (blocker.blockedUsers.includes(blockedId)) {
+      throw new Error("Fighter is already blocked");
+    }
+
+    blocker.blockedUsers.push(blockedId);
+    await blocker.save();
+
+    return { message: "Fighter blocked successfully" };
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+// Unblock a fighter
+export const unblockFighter = async (blockerId:string, blockedId:string) => {
+  try {
+    const blocker = await UserModel.findById(blockerId);
+
+    if (!blocker) {
+      throw new Error("User not found");
+    }
+
+    blocker.blockedUsers = blocker.blockedUsers.filter(
+      (id: { toString: () => any; }) => id.toString() !== blockedId.toString()
+    );
+
+    await blocker.save();
+
+    return { message: "Fighter unblocked successfully" };
+  } catch (error) {
+    throw error;
+  }
+};

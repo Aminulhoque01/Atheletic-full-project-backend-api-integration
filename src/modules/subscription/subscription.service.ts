@@ -1,6 +1,122 @@
 import { ISubscription } from "./subscription.interface";
 import { SubscriptionModel } from "./subscription.model";
 
+// export const subscriptionList = async (
+//   page: number = 1,
+//   limit: number = 10,
+// ): Promise<{
+//   subscriptions: ISubscription[];
+//   totalSubscriptions: number;
+//   totalPages: number;
+// }> => {
+//   const skip = (page - 1) * limit;
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   const query: any = { isDeleted: { $ne: true } }; // Filter out deleted subscriptions
+
+//   // Query for subscriptions with pagination
+//   const subscriptions = await SubscriptionModel.aggregate<ISubscription>([
+//     { $match: query },
+//     {
+//       $setWindowFields: {
+//         sortBy: { createdAt: -1 },
+//         output: {
+//           serial: {
+//             $documentNumber: {},
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $addFields: {
+//         numericDuration: { $toInt: "$duration" }, // Convert string to integer directly
+//       },
+//     },
+//     {
+//       $addFields: {
+//         formattedDuration: {
+//           $cond: {
+//             if: { $lte: ["$numericDuration", 12] },
+//             then: {
+//               $concat: [
+//                 { $toString: "$numericDuration" },
+//                 " ",
+//                 {
+//                   $cond: {
+//                     if: { $eq: ["$numericDuration", 1] },
+//                     then: "month",
+//                     else: "months",
+//                   },
+//                 },
+//               ],
+//             },
+//             else: {
+//               $let: {
+//                 vars: {
+//                   years: { $floor: { $divide: ["$numericDuration", 12] } },
+//                   months: { $mod: ["$numericDuration", 12] },
+//                 },
+//                 in: {
+//                   $concat: [
+//                     { $toString: "$$years" },
+//                     " year",
+//                     {
+//                       $cond: {
+//                         if: { $eq: ["$$years", 1] },
+//                         then: "",
+//                         else: "s",
+//                       },
+//                     },
+//                     {
+//                       $cond: {
+//                         if: { $gt: ["$$months", 0] },
+//                         then: {
+//                           $concat: [
+//                             " ",
+//                             { $toString: "$$months" },
+//                             " month",
+//                             {
+//                               $cond: {
+//                                 if: { $eq: ["$$months", 1] },
+//                                 then: "",
+//                                 else: "s",
+//                               },
+//                             },
+//                           ],
+//                         },
+//                         else: "",
+//                       },
+//                     },
+//                   ],
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $project: {
+//         serial: 1, // Include the serial field
+//         name: 1, // Include subscription name
+//         price: 1, // Include price
+//         duration: "$formattedDuration", // Use formattedDuration as duration
+//         createdAt: 1, // Include createdAt field
+//       },
+//     },
+//     { $skip: skip }, // Skipping records for pagination
+//     { $limit: limit }, // Limiting the number of records per page
+//   ]);
+
+//   // Get the total number of subscriptions for calculating total pages
+//   const totalSubscriptions = await SubscriptionModel.countDocuments(query);
+//   const totalPages = Math.ceil(totalSubscriptions / limit);
+
+//   //console.log(subscriptions); // Log the result for debugging
+
+//   return { subscriptions, totalSubscriptions, totalPages };
+// };
+
+
 export const subscriptionList = async (
   page: number = 1,
   limit: number = 10,
@@ -10,25 +126,21 @@ export const subscriptionList = async (
   totalPages: number;
 }> => {
   const skip = (page - 1) * limit;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: any = { isDeleted: { $ne: true } }; // Filter out deleted subscriptions
 
-  // Query for subscriptions with pagination
   const subscriptions = await SubscriptionModel.aggregate<ISubscription>([
     { $match: query },
     {
       $setWindowFields: {
         sortBy: { createdAt: -1 },
         output: {
-          serial: {
-            $documentNumber: {},
-          },
+          serial: { $documentNumber: {} },
         },
       },
     },
     {
       $addFields: {
-        numericDuration: { $toInt: "$duration" }, // Convert string to integer directly
+        numericDuration: { $toInt: "$duration" },
       },
     },
     {
@@ -36,19 +148,7 @@ export const subscriptionList = async (
         formattedDuration: {
           $cond: {
             if: { $lte: ["$numericDuration", 12] },
-            then: {
-              $concat: [
-                { $toString: "$numericDuration" },
-                " ",
-                {
-                  $cond: {
-                    if: { $eq: ["$numericDuration", 1] },
-                    then: "month",
-                    else: "months",
-                  },
-                },
-              ],
-            },
+            then: { $concat: [{ $toString: "$numericDuration" }, " months"] },
             else: {
               $let: {
                 vars: {
@@ -59,33 +159,12 @@ export const subscriptionList = async (
                   $concat: [
                     { $toString: "$$years" },
                     " year",
-                    {
-                      $cond: {
-                        if: { $eq: ["$$years", 1] },
-                        then: "",
-                        else: "s",
-                      },
-                    },
-                    {
-                      $cond: {
-                        if: { $gt: ["$$months", 0] },
-                        then: {
-                          $concat: [
-                            " ",
-                            { $toString: "$$months" },
-                            " month",
-                            {
-                              $cond: {
-                                if: { $eq: ["$$months", 1] },
-                                then: "",
-                                else: "s",
-                              },
-                            },
-                          ],
-                        },
-                        else: "",
-                      },
-                    },
+                    { $cond: { if: { $eq: ["$$years", 1] }, then: "", else: "s" } },
+                    { $cond: {
+                      if: { $gt: ["$$months", 0] },
+                      then: { $concat: [" ", { $toString: "$$months" }, " month"] },
+                      else: "",
+                    }},
                   ],
                 },
               },
@@ -95,26 +174,31 @@ export const subscriptionList = async (
       },
     },
     {
-      $project: {
-        serial: 1, // Include the serial field
-        name: 1, // Include subscription name
-        price: 1, // Include price
-        duration: "$formattedDuration", // Use formattedDuration as duration
-        createdAt: 1, // Include createdAt field
+      $addFields: {
+        features: "$feature", // Alias 'feature' as 'features' for consistent naming
       },
     },
-    { $skip: skip }, // Skipping records for pagination
-    { $limit: limit }, // Limiting the number of records per page
+    {
+      $project: {
+        serial: 1,
+        name: 1,
+        price: 1,
+        duration: "$formattedDuration",
+        createdAt: 1,
+        features: 1, // Include features
+      },
+    },
+    { $skip: skip },
+    { $limit: limit },
   ]);
 
-  // Get the total number of subscriptions for calculating total pages
   const totalSubscriptions = await SubscriptionModel.countDocuments(query);
   const totalPages = Math.ceil(totalSubscriptions / limit);
 
-  //console.log(subscriptions); // Log the result for debugging
-
   return { subscriptions, totalSubscriptions, totalPages };
 };
+
+
 
 export const findSubsById = async (
   id: string,

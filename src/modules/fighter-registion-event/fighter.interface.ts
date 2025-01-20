@@ -1,18 +1,30 @@
-import { Model } from "mongoose";
+import { Schema } from "mongoose";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { UserModel } from "../user/user.model";
 
-export interface IFighter {
-  name: string;
-  email: string;
-  discipline: string;
-  age: number;
-  weight: number;
-  weightCategory: string;
-  ageCategory: string;
-  events: string[];
-  isRegistered: boolean;
-  participants: string[];
-   
-  createdAt?: Date; // Optional created date
-  updatedAt?: Date; // Optional updated date
+
+interface FightCard {
+  participant1: Schema.Types.ObjectId;
+  participant2: Schema.Types.ObjectId;
+  status?: string;
+  score?: number;
 }
-export type FighterModel = Model<IFighter, Record<string, unknown>>;
+
+export interface ITournament extends Document {
+  eventID: string;
+  fightCards:FightCard[];
+  createdAt?: Date;
+}
+
+export interface IWallet extends Document {
+  managerId: Schema.Types.ObjectId;
+  totalEarnings: number;
+  withdrawalRequests: {
+    bankName: string;
+    accountType: string;
+    accountNumber: string;
+    withdrawalAmount: number;
+    status: "pending" | "completed";
+  }[];
+}

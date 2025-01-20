@@ -17,3 +17,14 @@ export type IGenericErrorResponse = {
   message: string;
   errorMessage: IGenericErrorMessage[];
 };
+
+
+export interface PaginateResult<T> {
+  data: any;
+  meta: any;
+  results: T[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+}

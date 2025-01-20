@@ -1,121 +1,157 @@
-import { Nodemailer_GMAIL, Nodemailer_GMAIL_PASSWORD } from "../../config";
-import { Event } from "../event/event.models";
+// import { Nodemailer_GMAIL, Nodemailer_GMAIL_PASSWORD } from "../../config";
+// import { Event } from "../event/event.models";
 
+import { JWT_SECRET_KEY } from "../../config";
+import catchAsync from "../../utils/catchAsync";
 import { UserModel } from "../user/user.model";
-import { IFighter } from "./fighter.interface";
-import { Fighter } from "./fighter.model";
-import nodemailer from "nodemailer";
- // Adjust the path as necessary
+import { ITournament } from "./fighter.interface";
+import { TournamentModel, Wallet } from "./fighter.model";
 
-const createFighter = async (payload: IFighter): Promise<IFighter | null> => {
-  const fighter = await Fighter.create(payload);
 
+// const requestWithdrawal= async(managerId: string, bankDetails: any)=> {
+  
  
+//   const { bankName, accountType, accountNumber, withdrawalAmount } = bankDetails;
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure: true,
-    auth: {
-      user: Nodemailer_GMAIL,
-      pass: Nodemailer_GMAIL_PASSWORD,
-    },
+//   // Check if sufficient funds are available
+//   const wallet = await Wallet.findOne({ managerId });
+//   if (!wallet || wallet.totalEarnings < withdrawalAmount) {
+//     throw new Error("Insufficient funds.");
+//   }
+
+
+//   if (!wallet) {
+//     throw new Error("Wallet not found for the manager.");
+//   }
+
+//   if (wallet.totalEarnings < withdrawalAmount) {
+//     throw new Error("Insufficient funds. Your available balance is " + wallet.totalEarnings);
+//   }
+//   // Add withdrawal request
+//   wallet.withdrawalRequests.push({
+//     bankName,
+//     accountType,
+//     accountNumber,
+//     withdrawalAmount,
+//     status: "pending",
+//   });
+
+//   wallet.totalEarnings -= withdrawalAmount; // Deduct from total earnings
+//   await wallet.save();
+
+//   return wallet;
+// }
+
+
+
+// const createTournament = async (eventID: string, fighterIDs: string[],): Promise<any> => {
+//   if (fighterIDs.length % 2 !== 0) {
+//     throw new Error("Number of fighters must be even to create fight cards.");
+//   }
+
+//   // Sort fighters (as shown in the previous response)
+//   const fighters = await UserModel.find({ _id: { $in: fighterIDs } }).select("height weight age");
+
+//   fighters.sort((a, b) => {
+//     if (a.weight !== b.weight) return a.weight - b.weight;
+//     if (a.height !== b.height) return a.height - b.height;
+//     return a.age - b.age;
+//   });
+
+//   // Generate fight cards
+//   const fightCards = [];
+//   const startDate = new Date(); // Start scheduling from now
+//   let currentFightTime = startDate;
+
+//   for (let i = 0; i < fighters.length; i += 2) {
+//     fightCards.push({
+//       participant1: fighters[i]._id,
+//       participant2: fighters[i + 1]._id,
+//       fightDate: currentFightTime, // Assign fight date and time
+//       duration: 60, // Duration of 1 hour
+//     });
+
+//     // Increment time for the next fight
+//     currentFightTime = new Date(currentFightTime.getTime() + 60 * 60 * 1000);
+//   }
+
+//   // Create and save tournament
+//   const tournament = new TournamentModel({
+//     eventID,
+//     fightCards,
+//   })
+
+  
+//    await tournament.save();
+//   //  await Event.update({ eventID }, { $set: { fighterCards } });
+
+//   return tournament;
+// };
+
+
+const createTournament = async (eventID: string, fighterIDs: string[]): Promise<any> => {
+  if (fighterIDs.length % 2 !== 0) {
+    throw new Error("Number of fighters must be even to create fight cards.");
+  }
+
+  const fighters = await UserModel.find({ _id: { $in: fighterIDs } }).select("height weight age");
+
+  fighters.sort((a, b) => {
+    if (a.weight !== b.weight) return a.weight - b.weight;
+    if (a.height !== b.height) return a.height - b.height;
+    return a.age - b.age;
   });
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: payload.email,
-    subject: 'Registration Confirmation',
-    text: `Hi ${payload.name},\n\nYour registration was successful!\n\nThank you.`,
-    
-  };
-  
-  await transporter.sendMail(mailOptions);
+  const fightCards = [];
+  const startDate = new Date(); // Start scheduling from now
+  let currentFightTime = startDate;
 
-  
+  for (let i = 0; i < fighters.length; i += 2) {
+    fightCards.push({
+      participant1: fighters[i]._id,
+      participant2: fighters[i + 1]._id,
+      fightDate: currentFightTime,
+      duration: 60,
+    });
 
-  return fighter;
+    currentFightTime = new Date(currentFightTime.getTime() + 60 * 60 * 1000);
+  }
+
+  const tournament = new TournamentModel({
+    eventID,
+    fightCards,
+  });
+  await tournament.save();
+
+  // Update event's fighterCards field
+  // await Event.update({ eventID }, { $set: { fightCards } });
+
+  return tournament;
 };
 
- const registerForEvent = async (
-  fighterId: string,
-  eventId: string,
-  managerId:string,
-  amount: number
-):Promise<any> => {
-  // Check if the fighter exists
-  const fighter = await UserModel.findById(fighterId);
-  if (!fighter) {
-    throw new Error("Fighter not found");
-  }
-
-  // Check if the event exists
-  const event = await Event.findById(eventId);
-  if (!event) {
-    throw new Error("Event not found");
-  }
-
-  // Check if the fighter is already registered
-  if (fighter.events.includes(eventId)) {
-    throw new Error("Fighter is already registered for this event");
-  }
 
 
-  if (!managerId) {
-    throw new Error("Event does not have a manager assigned");
-  }
 
-   // Verify the amount matches the event entry fee
-  if (amount !== event.eventEntryFee) {
-    throw new Error("Incorrect entry fee amount");
-  }
+const getAllTournaments = async (): Promise<ITournament[]> => {
+  const tournaments = await TournamentModel.find()
+    .populate("eventID", "eventName eventDate eventLocation") // Populate event details
+    .populate("fightCards.participant1", "firstName lastName") // Populate participant 1 details
+    .populate("fightCards.participant2", "firstName lastName") // Populate participant 2 details
+    .exec();
 
-
-   // Update EventManager earnings
-   const manager = await UserModel.findById(managerId);
-   if (!manager) {
-    throw new Error("Event manager not found");
-
-
-  }
-
-  
-
-  if (typeof manager.earnings !== 'number') {
-    manager.earnings = 0; // Initialize to 0 if the value is invalid
-  }
- 
-  
-   
-  manager.earnings += amount;
-  await manager.save();
-
-
-  // Add event to fighter's list
-  fighter.events.push(eventId, );
-  fighter.isRegistered = true;
-  
-  
-
-  // Save the updated fighter
-  await fighter.save();
-
-  return fighter;
-
-
-  
-};
-
-const getEventRegister = async ( ) => {
-
-  const result = await UserModel.find({isRegistered: true, isProUser: true });
-  return result;
+  return tournaments.map(tournament => tournament.toObject() as unknown as ITournament);
 }
 
-export const FighterService = {
-  createFighter,
-  registerForEvent,
-  getEventRegister
+
+
+
+export const TournamentService = {
+  createTournament,
+  getAllTournaments,
+  // requestWithdrawal
 };
+
+
 function handlePayment(amount: number) {
   throw new Error("Function not implemented.");
 }

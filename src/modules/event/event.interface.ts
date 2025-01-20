@@ -1,11 +1,53 @@
 import { Model, Schema, Types } from "mongoose";
 
+
+interface IFightCards {
+  _id: any;
+  fighterID: any;
+  participant1: string;
+  participant2: string;
+  status?: string;
+  score?: number;
+}
+
+interface IPaymentStatus {
+  paid: number;
+  unpaid: number;
+};
+
+interface IStatistics {
+  registrations: number;
+  paymentStatus: IPaymentStatus;
+};
+
+interface IDateTimeRange {
+  RegistrationOpenDate: Date;
+  RegistrationOpenTime: string;
+  RegistonLastDate: Date;
+  RegistionLastTime: string;
+};
+
+interface IPreDateTimeRange {
+  Pre_RegistrationOpenDate: Date;
+  Pre_RegistrationOpenTime: string;
+  Pre_RegistonLastDate: Date;
+  Pre_RegistionLastTime: string;
+};
+
+interface IFinalEventDateTime {
+  eventOpenDateline: Date;
+  eventOpenTime: string;
+  eventEndDateline: Date;
+  eventEndTime: string;
+}
+
+
 export interface IEvent {
   id: Schema.Types.ObjectId;
   eventBanner:string,
   eventLogo:string,
   eventID: string;
-  managerId: object;
+  manager: object;
   title: string;
   eligibilityCriteria: {
     age: number;
@@ -13,31 +55,21 @@ export interface IEvent {
     discipline: string;
   };
   isPaid: boolean;
-  fightCards: {
-    _id: any;
-    participant1: string;
-    participant2: string;
-    status: string;
-    score: number;
-  }[];
-  statistics: {
-    registrations: number;
-    paymentStatus: {
-      paid: number;
-      unpaid: number;
-    };
-  };
+  fightCards:IFightCards[];
+  statistics: IStatistics;
   eventName: string; // Event title name
   eventTitleName:string;
-  eventCategories: string[]; // Event categories
-  eventType: string; // Event type
+  eventCategories: Schema.Types.ObjectId; // Event categories
+  eventType: 'gala' | 'tournament'; // Event type
+  
   eventLocation: string; // Event location
-  registrationOpenDateTime: Date; // Registration open date & time
-  registrationLastDateTime: Date; // Registration last date & time
-  preRegistrationOpenDateTime?: Date; // Optional pre-registration open date & time
-  preRegistrationLastDateTime?: Date; // Optional pre-registration last date & time
-  finalEventDateTime: Date; // Final event dateline
-  eventEndDateTime: Date; // Event end date & time
+  registrationOpenDateTime: IDateTimeRange; // Registration open date & time
+  
+  pre_registrationOpenDateTime?: IPreDateTimeRange; // Optional pre-registration open date & time
+ 
+   
+  finalEventDateTime:IFinalEventDateTime;
+    
   chosenSports: string[]; // Chosen sports
   eventEntryFee: number; // Event entry fee
   eventDescription: string;

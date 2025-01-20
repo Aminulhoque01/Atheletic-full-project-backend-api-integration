@@ -63,6 +63,7 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
   },
 );
 
+
 export const getSubscription = catchAsync(
   async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -89,6 +90,8 @@ export const getSubscription = catchAsync(
         },
       });
     }
+
+    // console.log(subscriptions)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

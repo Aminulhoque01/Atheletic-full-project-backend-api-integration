@@ -18,7 +18,7 @@ const CategorySchema= new Schema<ICategory>({
         },
       },
       categoryName: { type: String },
-    // userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
    
 }, { timestamps: true });
 

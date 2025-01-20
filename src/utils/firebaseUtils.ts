@@ -53,7 +53,31 @@ admin.initializeApp({
     // appId: process.env.AppId,
     // measurementId: process.env.MeasurementId,
     // vapidKey: process.env.VapidKey,
+
+ 
+
+
+
   }),
 });
 
 module.exports = admin;
+
+
+// admin.initializeApp({
+//   credential: admin.credential.cert({
+//     projectId: process.env.FIREBASE_PROJECT_ID,
+//     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+//     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+//   }),
+// });
+
+// export async function sendNotification(notificationPayload: any) {
+//   try {
+//     console.log("Sending notification:", notificationPayload);
+//     const response = await admin.messaging().send(notificationPayload);
+//     console.log("Notification sent successfully:", response);
+//   } catch (err) {
+//     console.error("Error sending notification:", err);
+//   }
+// }

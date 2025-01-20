@@ -105,8 +105,15 @@ export const paymentCreate = catchAsync(async (req: Request, res: Response) => {
       });
     }
 
+   
+    console.log("Authorization header:", req.headers.authorization);
+
+   
+    
+
     // Fetch the user by ID
     const user = await UserModel.findById(userId,userName);
+    console.log(user)
     if (!user) {
       return sendError(res, httpStatus.NOT_FOUND, {
         message: "User not found.",
@@ -338,7 +345,7 @@ export const getAllPayments = async (req: Request, res: Response) => {
       userName,
       userId,
       location,
-      Image
+      
     });
 
     if (result.data.length === 0) {

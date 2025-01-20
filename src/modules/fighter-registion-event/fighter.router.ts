@@ -4,8 +4,9 @@ import { adminMiddleware } from "../../middlewares/auth";
 
 const router= Router();
 
-router.post('/register', adminMiddleware('fighter'), FighterController.registerFighter);
-router.post('/event-register', adminMiddleware('fighter'), FighterController.registerForEvent);
-router.get('/eventRegister-get',adminMiddleware('eventManager'), FighterController.getEventRegister);
+router.post('/event-register', adminMiddleware(['fighter',"eventManager"]), FighterController.registerFighter);
+router.get('/registion-pepole', adminMiddleware('eventManager'), FighterController.getEventRegistrations);
+
+router.get('/tournament', FighterController.getAllTournament);
 
 export const FighterRoutes = router;

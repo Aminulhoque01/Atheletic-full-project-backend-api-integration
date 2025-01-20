@@ -1,5 +1,5 @@
 // import { getAllUsers } from './user.controller';
-import { getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, getMyFavoriteFighters, matchFighterService, recentAllerUsers, userFavoriteFighter } from "./user.service";
+import { blockFighters, getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, getFilteredFighters, getFriendRequests, getMyFavoriteFighters, getSingleFighters, matchFighterService, recentAllerUsers, respondToFriendRequest, sendFriendRequest, unblockFighter, } from "./user.service";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -28,6 +28,7 @@ import {
   userDelete,
   getAllJudgments as getAllJudgmentsService,
 
+
 } from "./user.service";
 
 import { OTPModel, PendingUserModel, UserModel } from "./user.model";
@@ -43,6 +44,10 @@ import {
 import httpStatus from "http-status";
 import sendNotification from "../../utils/sendNotification";
 import { get } from "mongoose";
+import { error } from "winston";
+
+
+
 
 export const registerUser = catchAsync(async (req: Request, res: Response) => {
   const {
@@ -100,13 +105,12 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       email,
       password,
       role,
-      boxing_short_video,
       weight,
-      height,
       sport,
       dateOfBirth,
       gym,
       fightRecord,
+      gender,
       location,
       interests: [],
     };
@@ -163,7 +167,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
       password,
       role,
       judgmentExperience,
-      
+
     };
 
     // Trim all values and check for missing fields
@@ -723,7 +727,7 @@ export const changePassword = catchAsync(
 );
 
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const { name, address, bio, phone, age, about, gender } = req.body;
+  const { name, address, bio, phone, age, about, gender, boxing_short_video } = req.body;
 
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -753,6 +757,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
   if (age) updateData.age = age;
   if (about) updateData.about = about;
   if (gender) updateData.gender = gender;
+  if (boxing_short_video) updateData.boxing_short_video = boxing_short_video;
   if (req.file) {
     const imagePath = `public\\images\\${req.file.filename}`;
     const publicFileURL = `/images/${req.file.filename}`;
@@ -1061,6 +1066,29 @@ export const getAllFighter = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+export const getSingleFighter = catchAsync(async (req: Request, res: Response) => {
+  const { fighterId } = req.body; // Ensure fighterId is being passed in the request
+
+  if (!fighterId) {
+    throw new Error("Fighter ID is required");
+  }
+
+  const result = await getSingleFighters(fighterId);
+
+  if (!result) {
+    throw new Error("Fighter not found");
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Get single fighter successfully",
+    data: result,
+  });
+});
+
+
 export const getAllEventManager = catchAsync(
   async (req: Request, res: Response) => {
     const result = await getAllEventManagers();
@@ -1169,6 +1197,32 @@ export const matchFighter = catchAsync(async (req: Request, res: Response) => {
 
 
 });
+
+
+export const fighterFiltering = catchAsync(async (req: Request, res: Response) => {
+  const filters = {
+    sport: req.query.sport as string,
+    location: req.query.location as string,
+    trainingType: req.query.trainingType as string,
+    weight: req.query.weight as string,
+    sortBy: req.query.sortBy as string,
+    order: req.query.order as "asc" | "desc",
+  };
+
+  const fighters = await getFilteredFighters(filters);
+
+  if (!fighters || fighters.length === 0) {
+    throw new Error("No fighters found with the given criteria");
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrieved fighters successfully",
+    data: fighters,
+  });
+});
+
 
 
 // my faverite fighter
@@ -1285,3 +1339,122 @@ export const deleteFavoriteFighter = catchAsync(async (req: Request, res: Respon
   });
 });
 
+
+export const sendFrinedRequest = catchAsync(async (req: Request, res: Response) => {
+  const { receiverId } = req.body;
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return sendError(res, httpStatus.UNAUTHORIZED, {
+      message: "No token provided or invalid format.",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const senderId = decoded.id;
+
+  if (!senderId) {
+    return sendError(res, httpStatus.UNAUTHORIZED, { message: "User not authenticated." });
+  }
+
+  const message = await sendFriendRequest(senderId, receiverId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "send friend request successfully.",
+    data: { user: message },
+  });
+
+});
+
+
+export const getFriendRequest = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.body;
+  const requests = await getFriendRequests(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "all friend request get successfully.",
+    data: { user: requests },
+  });
+});
+
+
+export const sendResponseRequest= catchAsync(async(req:Request, res:Response)=>{
+  const { senderId, action } = req.body;
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return sendError(res, httpStatus.UNAUTHORIZED, {
+      message: "No token provided or invalid format.",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const userId = decoded.id;
+
+  const message = await respondToFriendRequest(userId, senderId, action);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "friend request responsed successfully.",
+    data: { user: message },
+  });
+})
+
+
+export const blockFighter= catchAsync(async(req:Request,res:Response)=>{
+  const { blockedId } = req.body;
+
+  const authHeader = req.headers.authorization;
+
+  if(!authHeader || !authHeader.startsWith("Bearer")){
+    return sendError(res, httpStatus.UNAUTHORIZED,{
+      message:"No token provided or invalid formate"
+    })
+  };
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const blockerId = decoded.id;
+
+  const response = await blockFighters(blockerId, blockedId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "fighter block successfully.",
+    data: { user: response },
+  });
+
+});
+
+export const unblocked = catchAsync(async(req:Request, res:Response)=>{
+  const { blockedId } = req.body;
+
+  const authHeader = req.headers.authorization;
+
+  if(!authHeader || !authHeader.startsWith("Bearer")){
+    return sendError(res, httpStatus.UNAUTHORIZED,{
+      message:"No token provided or invalid formate"
+    })
+  };
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, JWT_SECRET_KEY as string) as { id: string };
+  const blockerId = decoded.id;
+  const response = await unblockFighter(blockerId, blockedId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "fighter unblock successfully.",
+    data: { user: response },
+  });
+})

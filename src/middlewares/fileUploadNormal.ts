@@ -7,6 +7,7 @@ import createHttpError from "http-errors";
 import { max_file_size, UPLOAD_FOLDER } from "../config";
 
 const UPLOAD_PATH = UPLOAD_FOLDER || "public/images";
+// const UPLOAD_PATH =path.join(__dirname, "../public/images");
 const MAX_FILE_SIZE = Number(max_file_size) || 5 * 1024 * 1024;
 
 const ALLOWED_FILE_TYPES = [
@@ -31,6 +32,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const storage = multer.diskStorage({
+
   destination: function (req, file, cb) {
     cb(null, UPLOAD_PATH);
   },
@@ -73,5 +75,33 @@ const upload = multer({
     fileSize: MAX_FILE_SIZE,
   },
 });
+
+
+// import fs from "fs";
+
+
+// // Directory where files will be uploaded
+// const uploadDir = path.join(__dirname, "../public/images");
+
+// // Ensure directory exists
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir, { recursive: true });
+// }
+
+// // Configure Multer storage
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueSuffix = Date.now() + "-" + file.originalname;
+//     cb(null, uniqueSuffix);
+//   },
+// });
+
+// const upload = multer({ storage });
+
+
+
 
 export default upload;

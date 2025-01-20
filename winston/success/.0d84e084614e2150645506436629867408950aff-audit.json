@@ -6,44 +6,49 @@
     "auditLog": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\.0d84e084614e2150645506436629867408950aff-audit.json",
     "files": [
         {
-            "date": 1736834912502,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-12-success.log",
-            "hash": "c3803a5cd3df09e44ab6639f796a2f3a2487bf9fd388a7d04e875e3626206955"
+            "date": 1737342536903,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-09-success.log",
+            "hash": "c0e76ca0231b512bca29751da250cdab4174a9b4277c4e0dc7cdc735a62083f5"
         },
         {
-            "date": 1736838161528,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-13-success.log",
-            "hash": "f3b5ddfdad5adc91efb1cdd9ea13b9a21cfc78b8769e466905ee3d74af04800d"
+            "date": 1737345644018,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-10-success.log",
+            "hash": "061f43e1eadbb3d64a765a68c8555bf8ecb899f1e2eb182a19c28cfd4191c80c"
         },
         {
-            "date": 1736842477792,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-14-success.log",
-            "hash": "a928fa5bd739ba01081533ffb358fe8f618c2e2b90777ba4c0e6e2ef330a414d"
+            "date": 1737349467915,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-11-success.log",
+            "hash": "ff886a072b87292c0b87418520ad911a01196f8a6253e51a2dfe5809f42a148c"
         },
         {
-            "date": 1736847304319,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-15-success.log",
-            "hash": "36ce7f52fad8e456fc5f4a62a1878db13d0abd3ce6c92049c6d74a439a28b2e7"
+            "date": 1737352808165,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-12-success.log",
+            "hash": "2e9ce8d23a4193f4710fe04791f098643ebe6a30edecf9029f713acbfb7efe46"
         },
         {
-            "date": 1736849181778,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-16-success.log",
-            "hash": "c84daeebafe2d7e952030a08e2ffbbb6663d68bd22c4d61559f001a822e1df1d"
+            "date": 1737356406596,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-13-success.log",
+            "hash": "111470bfb04aa22dba1af5c40ec742cbb946b55cf0fd87c564f0a875a2366b57"
         },
         {
-            "date": 1736852984416,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-17-success.log",
-            "hash": "b525670d86a0c09690ccea24a0e6527a023520763359b308c87b9896deba3e5a"
+            "date": 1737360002025,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-14-success.log",
+            "hash": "9463ae9ef4a7535ea45e6600591d1a5750045a54b7ec0c3dd811cce5f777e47a"
         },
         {
-            "date": 1736856340005,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\14-01-2025-18-success.log",
-            "hash": "fe9febd4bf0f3e5007524474761b5b87bc927e8fff22ae00678342294590e515"
+            "date": 1737364172472,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-15-success.log",
+            "hash": "9ec79430b6db7a1e1facd1a408dd8d8c638b2234b61e9aa0e81c89afed04e51f"
         },
         {
-            "date": 1736913760217,
-            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\15-01-2025-10-success.log",
-            "hash": "1ecb20887170f0263b68bbd8ec17fc567810cbf82a7c5d216600cf86f0cdfa2b"
+            "date": 1737367237385,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-16-success.log",
+            "hash": "754375229bbd9ea7ef446cd8a2411f9dc58667a81534d9f6c144636eda64b72e"
+        },
+        {
+            "date": 1737370810313,
+            "name": "C:\\Projects\\Atheletic-full-project-backend-api-integration\\winston\\success\\20-01-2025-17-success.log",
+            "hash": "97a1117418c9de45318701d58c7b1a39fe0e9f0d43a1c44cd31c80097861f216"
         }
     ],
     "hashType": "sha256"
