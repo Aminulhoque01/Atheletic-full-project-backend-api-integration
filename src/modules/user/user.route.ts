@@ -36,6 +36,8 @@ import {
   sendResponseRequest,
   blockFighter,
   unblocked,
+  getSingleJudgment,
+  assignJudment,
   // fighterFillring,
   
   
@@ -52,6 +54,8 @@ router.post(
   registerUser,
 );
 router.get("/fighter", adminMiddleware("fighter"), getSingleFighter);
+router.get("/judgment", adminMiddleware(["eventManager","judgment"]), getSingleJudgment);
+router.post("/assign-judg", adminMiddleware(["eventManager"]), assignJudment);
 
 router.post("/login", loginUser);
 router.post("/admin-login", adminloginUser);

@@ -282,6 +282,32 @@ export const getSingleFighters = async (fighterId: string) => {
 };
 
 
+export const getSingleJudgments = async (judgmentId: string) => {
+  // If querying by _id, ensure it is converted to ObjectId
+  if (!mongoose.Types.ObjectId.isValid(judgmentId)) {
+    throw new Error("Invalid judgment ID format");
+  }
+
+  const fighter = await UserModel.findOne({_id:  judgmentId }); // Querying by _id
+  return fighter;
+};
+
+//assign judgemnt
+
+export const assignJudgmentRole = async (judgId: string) => {
+  const user = await UserModel.findById(judgId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Update role to "Judgment"
+  user.role = 'judgment';
+  await user.save();
+  return user;
+};
+
+
+
 export const getAllEventManagers = async () => {
   const eventManager = await UserModel.find({
     role: "eventManager",

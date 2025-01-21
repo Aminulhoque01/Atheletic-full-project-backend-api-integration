@@ -1,5 +1,5 @@
 // import { getAllUsers } from './user.controller';
-import { blockFighters, getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, getFilteredFighters, getFriendRequests, getMyFavoriteFighters, getSingleFighters, matchFighterService, recentAllerUsers, respondToFriendRequest, sendFriendRequest, unblockFighter, } from "./user.service";
+import { assignJudgmentRole, blockFighters, getAllEventManagers, getAllTotalUsers, getEventManagerEarnings, getFilteredFighters, getFriendRequests, getMyFavoriteFighters, getSingleFighters, getSingleJudgments, matchFighterService, recentAllerUsers, respondToFriendRequest, sendFriendRequest, unblockFighter, } from "./user.service";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -1067,6 +1067,7 @@ export const getAllFighter = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+
 export const getSingleFighter = catchAsync(async (req: Request, res: Response) => {
   const { fighterId } = req.body; // Ensure fighterId is being passed in the request
 
@@ -1087,6 +1088,39 @@ export const getSingleFighter = catchAsync(async (req: Request, res: Response) =
     data: result,
   });
 });
+
+export const getSingleJudgment = catchAsync(async (req: Request, res: Response) => {
+  const { judgmentId } = req.body; // Ensure fighterId is being passed in the request
+
+  if (!judgmentId) {
+    throw new Error("judgment ID is required");
+  }
+
+  const result = await getSingleJudgments(judgmentId);
+
+  if (!result) {
+    throw new Error("judgment not found");
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Get single judgment successfully",
+    data: result,
+  });
+});
+
+export const assignJudment= catchAsync(async(req:Request, res:Response)=>{
+  const {judgId}=req.body;
+  const result = await assignJudgmentRole(judgId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: " judgment assign successfully",
+    data: result,
+  });
+})
 
 
 export const getAllEventManager = catchAsync(

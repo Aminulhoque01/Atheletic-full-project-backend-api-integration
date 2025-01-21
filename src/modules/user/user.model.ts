@@ -176,7 +176,7 @@ const UserSchema = new Schema<IUser>(
         ref: "Category",
       },
     ],
-
+ 
   
     earnings: { type: Number },
     movements: { type: Number },

@@ -65,6 +65,14 @@ const EventSchema = new Schema<IEvent, EventModel>(
       required: true,
       default: "/banner/banner.png",
     },
+
+    invaitedjudges: [
+      {
+        judgeId: { type: Schema.Types.ObjectId, ref: "User" },
+        status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
+        invitedAt: { type: Date, default: Date.now },
+      },
+    ],
     // scores: { type: [Object], default: [] },
    
   },

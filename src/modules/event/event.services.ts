@@ -6,6 +6,7 @@ import { IpaginationsOptions } from "../../interface/paginations";
 import { IGeneticResponse, PaginateResult } from "../../interface/commont";
 import { paginationHelper } from "../../helpers/paginationHelper";
 import { Match } from "../match/match.moduler";
+import { UserModel } from "../user/user.model";
 
 const createEvent = async (eventData: Partial<IEvent>): Promise<IEvent> => {
   const event = new Event(eventData);
@@ -268,6 +269,39 @@ const getEventHistoryByManager= async(managerId:string)=>{
   return events;
 }
 
+const inviteJudgesToEvent = async (eventId: string, judgeIds: string[]) => {
+  const event = await Event.findById(eventId);
+  if (!event) {
+    throw new Error("Event not found.");
+  }
+
+  const validJudges = await UserModel.find({ _id: { $in: judgeIds }, role: "judgment" });
+  if (validJudges.length !== judgeIds.length) {
+    const invalidJudges = judgeIds.filter(
+      (judgeId) => !validJudges.some((judge) => judge._id.toString() === judgeId)
+    );
+    throw new Error(`Some judge IDs are invalid: ${invalidJudges.join(", ")}`);
+  }
+
+  judgeIds.forEach((judgeId) => {
+    if (
+      judgeId &&
+      !event.invaitedjudges.some((j) => j.judgeId?.toString() === judgeId.toString())
+    ) {
+      event.invaitedjudges.push({ judgeId, status: "pending", invitedAt: new Date() });
+    }
+  });
+
+  try {
+    await event.save();
+  } catch (error) {
+    // throw new Error(`Error saving event: ${error.message}`);
+    console.log(error)
+  }
+
+  return event;
+};
+
 
 
 export const EventService = {
@@ -281,6 +315,7 @@ export const EventService = {
   getRecentEvent,
   getEventsByManager,
   getEventRestion,
-  getEventHistoryByManager
+  getEventHistoryByManager,
+  inviteJudgesToEvent,
 
 };

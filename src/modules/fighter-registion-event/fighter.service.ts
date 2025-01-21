@@ -5,7 +5,7 @@ import { JWT_SECRET_KEY } from "../../config";
 import catchAsync from "../../utils/catchAsync";
 import { UserModel } from "../user/user.model";
 import { ITournament } from "./fighter.interface";
-import { TournamentModel, Wallet } from "./fighter.model";
+import { TournamentModel, } from "./fighter.model";
 
 
 // const requestWithdrawal= async(managerId: string, bankDetails: any)=> {

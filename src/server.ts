@@ -3,8 +3,10 @@ import seedSuperAdmin from "./DB";
 import app from "./app";
 import { DATABASE_URL, PORT } from "./config";
 // import { initSocketIO } from "./utils/socket";
+import { Server } from 'socket.io';
 
 import http from "http";
+import { socketHelper } from "./helpers/socketHelper";
 // import { Server } from "socket.io";
 
 const server = http.createServer(app);
@@ -24,6 +26,13 @@ async function main() {
     server.listen(Number(PORT), HOST, () => {
       console.log(`Server is running on http://${HOST}:${PORT}`);
     });
+    const io = new Server(server, {
+      pingTimeout: 60000,
+    });
+    socketHelper.socket(io);
+    // @ts-ignore
+    global.io = io;
+   
   } catch (error) {
     console.error("Error in main function:", error);
     process.exit(1);

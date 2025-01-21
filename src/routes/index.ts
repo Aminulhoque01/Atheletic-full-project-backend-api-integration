@@ -10,7 +10,7 @@ import { subscriptionRoutes } from "../modules/subscription/subscription.route";
 import { paymentRoutes } from "../modules/payment/payment.route";
 import { EventRoutes } from "../modules/event/event.route";
 // import { AthleticRoutes } from "../modules/athletic/athletic.router";
-import { ListingRoutes } from "../modules/listing/listing.router";
+// import { ListingRoutes } from "../modules/listing/listing.router";
 import { FighterRoutes } from "../modules/fighter-registion-event/fighter.router";
 import { ParticipantRouter } from "../modules/participant/participant.router";
 import { CategoryRoutes } from "../modules/category/category.router";
@@ -20,6 +20,8 @@ import { withdrawRouter } from "../modules/withdraw-request/withdraw.router";
 import { NotificationRoutes } from "../modules/notifications/notification.route";
 import { JudgmentRoutes } from "../modules/judgment/judgment.router";
 import { MatchRoutes } from "../modules/match/match.route";
+import { WalletRoutes } from "../modules/wallet/wallet.router";
+import { messageRoutes } from "../modules/chat/chat.route";
 
 
 
@@ -46,6 +48,10 @@ const apiRoutes = [
     route: FighterRoutes,
   },
   {
+    path: "/chat",
+    route: messageRoutes,
+  },
+  {
     path: "/event",
     route: EventRoutes,
   },
@@ -57,11 +63,11 @@ const apiRoutes = [
     path: "/withdraw",
     route: withdrawRouter,
   },
-
   {
-    path: "/listing",
-    route: ListingRoutes,
+    path:"/wallet",
+    route:WalletRoutes,
   },
+ 
   {
     path: "/participant",
     route: ParticipantRouter,

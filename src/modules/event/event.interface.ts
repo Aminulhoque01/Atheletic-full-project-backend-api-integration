@@ -81,6 +81,8 @@ export interface IEvent {
   updatedAt?: Date; // Optional updated date
    // Event price
    scores?: number[];
+
+   invaitedjudges:IJudge[]
 }
 
 export type EventModel = Model<IEvent, Record<string, unknown>>;
@@ -93,6 +95,13 @@ export type IEventFilters = {
   eventType?: string;
   eventLocation?: string;
 };
+
+
+interface IJudge {
+  judgeId: Types.ObjectId;
+  status: "pending" | "accepted" | "rejected";
+  invitedAt: Date;
+}
 
 
 export interface IFightCard {

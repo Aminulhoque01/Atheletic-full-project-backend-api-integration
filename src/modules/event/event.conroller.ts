@@ -19,6 +19,7 @@ import { UserModel } from "../user/user.model";
 import { body, validationResult } from 'express-validator';
 import { clearGlobalAppDefaultCred } from "firebase-admin/lib/app/credential-factory";
 import { CategoryModel } from "../category/category.model";
+import { sendFriendRequest } from "../user/user.service";
 
 const validateEventData = [
   body('title').notEmpty().withMessage('Title is required'),
@@ -422,7 +423,29 @@ const myEventHistory = catchAsync(async(req:Request, res:Response)=>{
     data: events,
   });
 
-})
+});
+
+
+const sendRequestJudgment: RequestHandler = catchAsync(async (req: Request, res: Response): Promise<void> => {
+  const { eventId, judgeIds } = req.body;
+
+  if (!eventId || !judgeIds || !Array.isArray(judgeIds) || judgeIds.length === 0) {
+    return sendError(res, httpStatus.BAD_REQUEST, { message: "Invalid request payload. Provide a valid event ID and a non-empty array of judge IDs." });
+  }
+
+  const result = await EventService.inviteJudgesToEvent(eventId, judgeIds);
+
+  if (!result) {
+    return sendError(res, httpStatus.NOT_FOUND, { message: "Event or judges not found." });
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Judges invited successfully.",
+    data: result,
+  });
+});
 
 
 
@@ -430,7 +453,7 @@ export const EventController = {
   createEvent,
   getAllEvent,
   getSingleEvent,
-
+  sendRequestJudgment,
   updateEvent,
   deleteEvent,
   myEventHistory,

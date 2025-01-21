@@ -41,6 +41,8 @@ router.get("/result/:id", EventController.myEventResult);
 
 router.get("/result/:id", adminMiddleware("fighter"), EventController.myEventResult);
 
+router.post("/judgmanget-request", adminMiddleware("eventManager"), EventController.sendRequestJudgment);
+
 
 
 // router.post("/generate-fighter/:id", EventController.generateFighterCard);
